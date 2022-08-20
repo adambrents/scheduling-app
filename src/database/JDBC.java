@@ -23,7 +23,6 @@ public abstract class JDBC {
             System.out.println("Error:" + e.getMessage());
         }
     }
-
     public static void closeConnection() {
         try {
             connection.close();
@@ -31,5 +30,8 @@ public abstract class JDBC {
         } catch (Exception e) {
             System.out.println("Error:" + e.getMessage());
         }
+    }
+    public static Connection getConnection(){
+        return connection;
     }
 }
