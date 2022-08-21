@@ -7,6 +7,10 @@ public class Report {
     private String reportName;
     private int reportId;
 
+    /**
+     * @param reportName
+     * @param reportId
+     */
     public Report(String reportName, int reportId) {
         this.reportName = reportName;
         this.reportId = reportId;

@@ -49,9 +49,17 @@ public class AllAppointmentsController implements Initializable {
 
     private Appointment selectedAppointment = null;
 
+    /**
+     * @param userId
+     */
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    /**
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onAdd(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
@@ -63,6 +71,9 @@ public class AllAppointmentsController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param event
+     */
     @FXML
     void onDelete(ActionEvent event) {
         selectedAppointment = ((Appointment) Table.getSelectionModel().getSelectedItem());
@@ -72,6 +83,11 @@ public class AllAppointmentsController implements Initializable {
         }
 
     }
+
+    /**
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onHome(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
@@ -83,6 +99,10 @@ public class AllAppointmentsController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         id.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));

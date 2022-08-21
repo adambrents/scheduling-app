@@ -31,6 +31,9 @@ public class Appointments {
     private static String divisionAppointment;
     private static int contactID;
 
+    /**
+     * @return
+     */
     public static ObservableList<Appointment> getAllAppointments(){
 
         try{
@@ -65,6 +68,11 @@ public class Appointments {
             return null;
         }
     }
+
+    /**
+     * @param appointment
+     * @return
+     */
     public static boolean addAppointment(Appointment appointment){
         LocalDateTime possibleStart = appointment.getStart().toLocalDateTime();
         LocalDateTime possibleEnd = appointment.getEnd().toLocalDateTime();
@@ -135,6 +143,10 @@ public class Appointments {
         return false;
     }
 
+    /**
+     * @param appointment
+     * @return
+     */
     public static boolean modifyAppointment(Appointment appointment){
         LocalDateTime possibleStart = appointment.getStart().toLocalDateTime();
         LocalDateTime possibleEnd = appointment.getEnd().toLocalDateTime();
@@ -214,6 +226,9 @@ public class Appointments {
         return false;
     }
 
+    /**
+     * @return
+     */
     public static int getId() {
         try {
             int lastID = 0;
@@ -235,6 +250,10 @@ public class Appointments {
         }
     }
 
+    /**
+     * @param appointment
+     * @return
+     */
     public static boolean deleteAppointment(Appointment appointment){
         try{PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
                 " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
@@ -246,6 +265,9 @@ public class Appointments {
         return false;
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<Appointment> getWeeklyAppointments(){
         try{
             weeklyAppointments.clear();
@@ -289,6 +311,9 @@ public class Appointments {
         }
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<Appointment> getMonthlyAppointments(){
         try{
             monthlyAppointments.clear();
@@ -332,6 +357,10 @@ public class Appointments {
         }
     }
 
+    /**
+     * @return
+     * @throws SQLException
+     */
     public static ObservableList<String> getTypes() throws SQLException {
         allTypes.clear();
         try {
@@ -348,6 +377,11 @@ public class Appointments {
         return null;
     }
 
+    /**
+     * @param localDateTime
+     * @param type
+     * @return
+     */
     public static int getMonthTypeNumber(LocalDateTime localDateTime, String type){
         int returnNumber = 0;
         try{
@@ -371,6 +405,10 @@ public class Appointments {
         return -1;
     }
 
+    /**
+     * @param contact
+     * @return
+     */
     public static ObservableList<Appointment> getContactAppointments(String contact){
         contactID = Contacts.getContactID(contact);
         try{
@@ -409,6 +447,10 @@ public class Appointments {
         }
     }
 
+    /**
+     * @param selectedCustomer
+     * @return
+     */
     public static boolean checkForAppointments(Customer selectedCustomer){
         int customerID = selectedCustomer.getId();
         customerAppointmentExists.clear();
@@ -432,8 +474,12 @@ public class Appointments {
         return false;
     }
 
+    /**
+     * @param selectedDivision
+     * @param contact
+     * @return
+     */
     public static ObservableList<Appointment> getDivisionAppointmentsList(String selectedDivision, String contact) {
-        int i = 0;
         contactID = Contacts.getContactID(contact);
 
         try{
@@ -473,6 +519,10 @@ public class Appointments {
         }
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     public static String getDivisionsAppointments(int appointmentId){
         try {
             statement = JDBCConnectionHelper.getStatement();
@@ -492,20 +542,5 @@ public class Appointments {
             return null;
         }
 
-    }
-
-    public static int getDivisionCount(){
-        try {
-            statement = JDBCConnectionHelper.getStatement();
-            String query = "SELECT COUNT(Division_ID) FROM client_schedule.first_level_divisions;";
-            ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
-                divisionCount = resultSet.getInt(1);
-            }
-            return divisionCount;
-        }catch (SQLException e){
-            e.printStackTrace();
-            return -1;
-        }
     }
 }

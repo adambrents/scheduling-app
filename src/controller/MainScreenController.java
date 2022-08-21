@@ -21,9 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-/**
- *
- */
 public class MainScreenController implements Initializable {
     @FXML
     private Button addCustomer;
@@ -145,7 +142,6 @@ public class MainScreenController implements Initializable {
      * When the delete customer button is clicked, validate request with user then proceed with deleting from db(and ui table)
      * Also validates delete eligibility
      * @param actionEvent
-     * @throws IOException
      */
     public void onDeleteCustomer(ActionEvent actionEvent) {
         selectedCustomer = ((Customer) customersTable.getSelectionModel().getSelectedItem());
@@ -282,6 +278,9 @@ public class MainScreenController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param actionEvent
+     */
     public void onDeleteAppointment(ActionEvent actionEvent) {
         if(thisWeekTab.isSelected()) {
             selectedAppointment = ((Appointment) weekTable.getSelectionModel().getSelectedItem());
@@ -301,10 +300,17 @@ public class MainScreenController implements Initializable {
         }
     }
 
+    /**
+     * @param user
+     */
     public void setUser(int user) {
         userId = user;
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onReports(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ReportsScreen.fxml"));
@@ -315,6 +321,10 @@ public class MainScreenController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onAllAppointments(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AllAppointmentsScreen.fxml"));

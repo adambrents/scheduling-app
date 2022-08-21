@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class JDBCConnectionHelper {
+    /**
+     * @return
+     */
     public static Statement getStatement(){
         try {
             Statement statement = JDBC.getConnection().createStatement();

@@ -34,6 +34,9 @@ public class AddCustomerController implements Initializable {
     private Parent scene;
     private int userId;
 
+    /**
+     * @param event
+     */
     public void onCountry(ActionEvent event){
 
         String selectedCountry = (String) countryBox.getValue();
@@ -48,6 +51,11 @@ public class AddCustomerController implements Initializable {
         }
 
     }
+
+    /**
+     * @param event
+     * @throws IOException
+     */
     public void onCancel(ActionEvent event) throws IOException {
 
         Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
@@ -59,6 +67,11 @@ public class AddCustomerController implements Initializable {
         stage.show();
 
     }
+
+    /**
+     * Called to add a customer to the database
+     * @param event
+     */
     public void onAdd(ActionEvent event){
         Division division = null;
         boolean valid = true;
@@ -108,9 +121,19 @@ public class AddCustomerController implements Initializable {
             }
         }
     }
+
+    /**
+     * @param userId
+     * @return
+     */
     public int setUser(int userId){
         return this.userId;
     }
+
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         //sets dropdown with all countries where service is available

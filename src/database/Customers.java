@@ -16,6 +16,9 @@ public class Customers {
     private static int lastID = 0;
     private static Statement statement;
 
+    /**
+     * @return
+     */
     public static ObservableList<String> getAllCountries() {
         try{
             allCountries.clear();
@@ -33,6 +36,9 @@ public class Customers {
         }
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<Customer> getAllCustomers() {
         try{
             allCustomers.clear();
@@ -62,10 +68,7 @@ public class Customers {
                         resultSet.getString("Division"),
                         resultSet.getInt("Division_ID"));
                 if (customer.getName() == ""){
-                    //do nothing if the customer does not have a name
-                    //This is used for when customers are "deleted"
-                    //Customers ids will still exist within the database so no id is made more than once
-                    //all other customer data will be removed from the database
+                    //do nothing
                 }
                 else {
                     allCustomers.add(customer);
@@ -80,7 +83,9 @@ public class Customers {
         }
 
     }
-
+    /**
+     * @param customer
+     */
     public static void updateCustomer(Customer customer) {
         try {
             PreparedStatement statement = JDBC.getConnection().prepareStatement(
@@ -97,6 +102,9 @@ public class Customers {
         }
     }
 
+    /**
+     * @return
+     */
     public static int getId() {
         try {
             Statement statement = JDBC.getConnection().createStatement();
@@ -120,6 +128,9 @@ public class Customers {
         }
     }
 
+    /**
+     * @param customer
+     */
     public static void addCustomer(Customer customer) {
         try {
             PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(
@@ -141,6 +152,10 @@ public class Customers {
         }
     }
 
+    /**
+     * @param customerID
+     * @return
+     */
     public static String getCustomerName(int customerID){
         try{
             Statement statement = JDBC.getConnection().createStatement();
@@ -160,6 +175,10 @@ public class Customers {
         return null;
     }
 
+    /**
+     * @param customerName
+     * @return
+     */
     public static int getCustomerId(String customerName){
         try{
             Statement statement = JDBC.getConnection().createStatement();
@@ -176,6 +195,9 @@ public class Customers {
         return -1;
     }
 
+    /**
+     * @param selectedCustomer
+     */
     public static void deleteCustomer(Customer selectedCustomer){
         try{PreparedStatement statement = JDBC.getConnection().prepareStatement(
                 "UPDATE client_schedule.customers "

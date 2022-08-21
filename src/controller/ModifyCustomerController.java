@@ -37,6 +37,10 @@ public class ModifyCustomerController implements Initializable {
     private int customerId;
     private int userId;
 
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Get data for Customer Table
@@ -49,6 +53,9 @@ public class ModifyCustomerController implements Initializable {
 
     }
 
+    /**
+     * @param selectedCustomer
+     */
     public void setCustomer(Customer selectedCustomer) {
         countryBox.setItems(Customers.getAllCountries());
 
@@ -76,6 +83,9 @@ public class ModifyCustomerController implements Initializable {
 
     }
 
+    /**
+     * @param actionEvent
+     */
     public void onCountry(ActionEvent actionEvent) {
         String countryValue = (String) countryBox.getValue();
         if (Objects.equals(countryValue, "U.S")) {
@@ -95,6 +105,10 @@ public class ModifyCustomerController implements Initializable {
         }
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onCancel(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
@@ -105,6 +119,10 @@ public class ModifyCustomerController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onUpdate(ActionEvent actionEvent) throws IOException {
         boolean valid = true;
         while (valid){
@@ -147,6 +165,9 @@ public class ModifyCustomerController implements Initializable {
         }
     }
 
+    /**
+     * @param userId
+     */
     public void setUserId(int userId) {
         this.userId = userId;
     }
