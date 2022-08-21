@@ -55,6 +55,9 @@ public class ModifyAppointmentController implements Initializable {
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
     private int appointmentId;
 
+    /**
+     * @param selectedAppointment
+     */
     public void setAppointment(Appointment selectedAppointment) {
         int i = 0;
         while(i < Customers.getAllCustomers().size()){
@@ -107,6 +110,10 @@ public class ModifyAppointmentController implements Initializable {
         });
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onCancel(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
@@ -117,10 +124,16 @@ public class ModifyAppointmentController implements Initializable {
         stage.show();
     }
 
+    /**
+     * @param userId
+     */
     public void setUser(int userId) {
         this.userId = userId;
     }
 
+    /**
+     * @param actionEvent
+     */
     public void onUpdate(ActionEvent actionEvent) {
         boolean validAppointment = true;
         errorText.setText("");
@@ -224,6 +237,11 @@ public class ModifyAppointmentController implements Initializable {
             }
         }
     }
+
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

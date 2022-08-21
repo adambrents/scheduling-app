@@ -6,12 +6,10 @@ import database.Times;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,6 +37,10 @@ public class LoginScreenController implements Initializable {
 
     private Parent scene;
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onSubmit(ActionEvent actionEvent) throws IOException {
         //gets resource bundles for use further down
         Locale locale = Locale.getDefault();
@@ -54,45 +56,70 @@ public class LoginScreenController implements Initializable {
         if (validUsername == true) {
             String pssword = passwordField.getText();
             boolean isUser = Logins.submit(usrnm, pssword);
-            if (isUser != true) {
-                passwordError.setText(resourceBundle.getString("PasswordError"));
-                usernameError.setText("");
-                loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText() + " Invalid password");
-                loginAttempt.close();
-            }
-
-            else {
-                loginAttempt.println(Times.getTimeStamp() + " Successful Login UserName: " + usernameField.getText());
-                loginAttempt.close();
-                Stage stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
-                scene = loader.load();
-                MainScreenController controller = loader.getController();
-                controller.setUser(Logins.getUserId(usernameField.getText()));
-                stage.setScene(new Scene(scene));
-                stage.show();
-                int index = 0;
-                while (index < Appointments.getWeeklyAppointments().size()){
-                    Timestamp startTimestamp = Appointments.getWeeklyAppointments().get(index).getStart();
-                    LocalDateTime startDateTime = startTimestamp.toLocalDateTime();
-                    if(startDateTime.isAfter(LocalDateTime.now()) && startDateTime.isBefore(LocalDateTime.now().plusMinutes(15))){
-                        appointmentsWithin15Min = true;
-                        break;
-                    }
-                    else {
-                        index++;
-                    }
-                }
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                if(appointmentsWithin15Min){
-                    alert.setContentText("You have an Appointment within 15 minutes");
+            try{
+                if (isUser != true) {
+                    passwordError.setText(resourceBundle.getString("PasswordError"));
+                    usernameError.setText("");
+                    loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText() + " Invalid password");
+                    loginAttempt.close();
                 }
                 else {
-                    alert.setContentText("You have no Appointments within 15 minutes");
+                    loginAttempt.println(Times.getTimeStamp() + " Successful Login UserName: " + usernameField.getText());
+                    loginAttempt.close();
+                    Stage stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
+                    scene = loader.load();
+                    MainScreenController controller = loader.getController();
+                    controller.setUser(Logins.getUserId(usernameField.getText()));
+                    stage.setScene(new Scene(scene));
+                    stage.show();
+                    int index = 0;
+                    while (index < Appointments.getWeeklyAppointments().size()){
+                        Timestamp startTimestamp = Appointments.getWeeklyAppointments().get(index).getStart();
+                        LocalDateTime startDateTime = startTimestamp.toLocalDateTime();
+                        if(startDateTime.isAfter(LocalDateTime.now()) && startDateTime.isBefore(LocalDateTime.now().plusMinutes(15))){
+                            appointmentsWithin15Min = true;
+                            break;
+                        }
+                        else {
+                            index++;
+                        }
+                    }
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    if(appointmentsWithin15Min){
+                        alert.setContentText("You have an Appointment within 15 minutes");
+                    }
+                    else {
+                        alert.setContentText("You have no Appointments within 15 minutes");
+                    }
+                    alert.show();
                 }
-                alert.show();
+            } catch (Exception e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error");
+                alert.setContentText("Error: See console for more details");
+                System.out.println(e.getMessage());
+                //Lambda expression to handle user response. Reloads login page on OK
+                alert.showAndWait().ifPresent((response -> {
+                    if (response == ButtonType.OK) {
+                        System.out.println("Alerting!");
+                        Parent main = null;
+                        try {
+                            main = FXMLLoader.load(getClass().getResource("LoginScreen.fxml"));
+                            Scene scene = new Scene(main);
+                            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                            stage.setScene(scene);
+                            stage.show();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }));
+                return;
             }
+
         } else {
             loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText());
             loginAttempt.close();
@@ -101,6 +128,10 @@ public class LoginScreenController implements Initializable {
         }
     }
 
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Locale locale = Locale.getDefault();
@@ -115,6 +146,9 @@ public class LoginScreenController implements Initializable {
         zoneID.setText(zone.toString());
     }
 
+    /**
+     * @param actionEvent
+     */
     public void onExit(ActionEvent actionEvent) {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();

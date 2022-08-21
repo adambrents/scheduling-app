@@ -20,6 +20,9 @@ public class Divisions {
     private static int divisionId = 0;
     private static String divisionName;
 
+    /**
+     * @return
+     */
     public static ObservableList<String> getUnitedStatesDivision() {
         try {
             unitedStatesDivisions.clear();
@@ -37,6 +40,9 @@ public class Divisions {
         }
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<String> getCanadaDivision() {
         try {
             canadaDivisions.clear();
@@ -54,6 +60,9 @@ public class Divisions {
         }
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<String> getUnitedKingdomDivision() {
         try {
             unitedKingdomDivisions.clear();
@@ -71,6 +80,10 @@ public class Divisions {
         }
     }
 
+    /**
+     * @param divisionName
+     * @return
+     */
     public static int getDivisionId(String divisionName) {
         try {
             statement = JDBCConnectionHelper.getStatement();
@@ -85,6 +98,10 @@ public class Divisions {
             return -1;
         }
     }
+
+    /**
+     * @return
+     */
     public static ObservableList<String> getAllDivisionNames() {
         try {
             allDivisionNames.clear();

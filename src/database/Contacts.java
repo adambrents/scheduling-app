@@ -11,6 +11,10 @@ import java.sql.Statement;
 public class Contacts {
     private static ObservableList<String> allContacts = FXCollections.observableArrayList();
     private static Statement statement;
+
+    /**
+     * @return
+     */
     public static ObservableList<String> getAllContacts(){
         allContacts.clear();
         try{
@@ -28,6 +32,11 @@ public class Contacts {
             return null;
         }
     }
+
+    /**
+     * @param contactName
+     * @return
+     */
     public static int getContactID(String contactName){
         try{
             statement = JDBCConnectionHelper.getStatement();
@@ -41,6 +50,11 @@ public class Contacts {
         }
         return -1;
     }
+
+    /**
+     * @param contactID
+     * @return
+     */
     public static String getContactName(int contactID){
         try{
             statement = JDBCConnectionHelper.getStatement();

@@ -10,6 +10,16 @@ public class Customer {
     private String division;
     private int divisionId;
 
+    /**
+     * @param Id
+     * @param name
+     * @param address
+     * @param postalCode
+     * @param phoneNumber
+     * @param country
+     * @param division
+     * @param divisionId
+     */
     public Customer(int Id, String name,String address, String postalCode, String phoneNumber, String country, String division, int divisionId){
         this.Id = Id;
         this.name = name;

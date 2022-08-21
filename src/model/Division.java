@@ -5,6 +5,10 @@ public class Division {
     private String name;
     private int countryID;
 
+    /**
+     * @param name
+     * @param countryID
+     */
     public Division(String name, int countryID) {
         this.name = name;
         this.countryID = countryID;

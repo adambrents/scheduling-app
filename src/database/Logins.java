@@ -10,6 +10,11 @@ public class Logins {
     private static User validUser;
     private static Statement statement;
 
+    /**
+     * @param UserName
+     * @param Password
+     * @return
+     */
     public static Boolean submit(String UserName, String Password){
         try {
             statement = JDBCConnectionHelper.getStatement();
@@ -28,6 +33,11 @@ public class Logins {
         }
         return true;
     }
+
+    /**
+     * @param UserName
+     * @return
+     */
     public static Boolean submit(String UserName){
         try {
             statement = JDBCConnectionHelper.getStatement();
@@ -46,6 +56,11 @@ public class Logins {
         }
         return true;
     }
+
+    /**
+     * @param userName
+     * @return
+     */
     public static int getUserId(String userName){
         try{
             statement = JDBCConnectionHelper.getStatement();

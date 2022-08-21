@@ -10,12 +10,20 @@ import javafx.stage.Stage;
 import static java.lang.Integer.parseInt;
 
 public class Main extends Application{
+    /**
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/view/LoginScreen.fxml"));
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
+
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         JDBC.openConnection();
         launch(args);

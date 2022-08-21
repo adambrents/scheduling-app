@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import static java.lang.Integer.parseInt;
 import static java.time.Month.*;
@@ -76,11 +77,17 @@ public class ReportsController implements Initializable {
     private ObservableList<String> reportsList = FXCollections.observableArrayList();
     private Report reports;
 
-
+    /**
+     * @param userId
+     */
     public void setUser(int userId) {
         this.userId = userId;
     }
 
+    /**
+     * @param event
+     * @throws IOException
+     */
     public void onReset(ActionEvent event) throws IOException {
         appointmentNumber.setText("0");
         Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
@@ -91,6 +98,7 @@ public class ReportsController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
+
     /**
      * @param actionEvent
      */
@@ -162,6 +170,10 @@ public class ReportsController implements Initializable {
 
     }
 
+    /**
+     * @param actionEvent
+     * @throws IOException
+     */
     public void onHome(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
@@ -171,8 +183,10 @@ public class ReportsController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
-
+    /**
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         monthsList.clear();

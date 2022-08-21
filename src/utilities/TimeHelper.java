@@ -10,6 +10,9 @@ public class TimeHelper {
     private static ObservableList<LocalDateTime> startAvailableTimes = FXCollections.observableArrayList();
     private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
 
+    /**
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAvailableTimes(){
         startAvailableTimes.clear();
         endAvailableTimes.clear();
@@ -23,11 +26,11 @@ public class TimeHelper {
         return startAvailableTimes;
     }
 
+    /**
+     * @return
+     */
     public static ObservableList<LocalDateTime> getEndAvailableTimes(){
         return endAvailableTimes;
     }
 
-    public static ZonedDateTime getEST(){
-        return ZonedDateTime.of(LocalDate.now(),LocalTime.now(),ZoneId.of("America/New_York"));
-    }
 }
