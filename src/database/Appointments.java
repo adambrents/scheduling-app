@@ -42,7 +42,8 @@ public class Appointments {
             String query = "SELECT a.*, fld.Division "
                          + "FROM client_schedule.appointments AS a "
                          + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID ";
+                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                         + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
                 Appointment appointment = new Appointment(resultSet.getInt(1),
@@ -275,7 +276,8 @@ public class Appointments {
             String query = "SELECT a.*, fld.Division "
                          + "FROM client_schedule.appointments AS a "
                          + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID ";
+                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                         + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
                 Appointment appointment = new Appointment(resultSet.getInt(1),
@@ -321,7 +323,8 @@ public class Appointments {
             String query = "SELECT a.*, fld.Division "
                          + "FROM client_schedule.appointments AS a "
                          + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID ";
+                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                         + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
                 Appointment appointment = new Appointment(resultSet.getInt(1),
@@ -530,7 +533,8 @@ public class Appointments {
                          + "FROM client_schedule.appointments AS a "
                          + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
                          + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE a.Appointment_ID = " + appointmentId;
+                         + "WHERE a.Appointment_ID = " + appointmentId
+                         + " AND a.Title IS NOT NULL; ";;
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()){

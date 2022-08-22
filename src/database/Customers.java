@@ -95,7 +95,7 @@ public class Customers {
                       + "', Phone = '" + customer.getPhoneNumber()
                       + "', Postal_Code = '" + customer.getPostalCode()
                       + "', Division_ID = '" + customer.getDivisionId()
-                      + "' WHERE customers.Customer_ID = " + customer.getId() + ";");
+                      + "' WHERE customers.Customer_ID = " + customer.getId() + " AND Customer_Name IS NOT NULL;");
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -110,6 +110,7 @@ public class Customers {
             Statement statement = JDBC.getConnection().createStatement();
             String query = "SELECT Customer_ID "
                          + "FROM client_schedule.customers "
+                         + "AND Customer_Name IS NOT NULL "
                          + "ORDER BY Customer_ID;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -161,7 +162,7 @@ public class Customers {
             Statement statement = JDBC.getConnection().createStatement();
             String query = "SELECT Customer_Name "
                          + "FROM client_schedule.customers "
-                         + "WHERE Customer_ID = " + customerID + ";";
+                         + "WHERE Customer_ID = " + customerID + " AND Customer_Name IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
                 String customerName = resultSet.getString(1);
@@ -182,7 +183,7 @@ public class Customers {
     public static int getCustomerId(String customerName){
         try{
             Statement statement = JDBC.getConnection().createStatement();
-            String query = "SELECT Customer_ID FROM client_schedule.customers WHERE Customer_Name ='" + customerName + "';";
+            String query = "SELECT Customer_ID FROM client_schedule.customers WHERE Customer_Name ='" + customerName + "' AND Customer_Name IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
                 int customerID = resultSet.getInt(1);
