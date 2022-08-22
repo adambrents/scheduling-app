@@ -107,7 +107,7 @@ public class LoginScreenController implements Initializable {
                         System.out.println("Alerting!");
                         Parent main = null;
                         try {
-                            main = FXMLLoader.load(getClass().getResource("LoginScreen.fxml"));
+                            main = FXMLLoader.load(getClass().getResource("/view/LoginScreen.fxml"));
                             Scene scene = new Scene(main);
                             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
                             stage.setScene(scene);
