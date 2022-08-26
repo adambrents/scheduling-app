@@ -11,6 +11,7 @@ import static java.lang.Integer.parseInt;
 
 public class Main extends Application{
     /**
+     * Loads login screen on app startup
      * @param primaryStage
      * @throws Exception
      */
@@ -22,6 +23,8 @@ public class Main extends Application{
     }
 
     /**
+     * opens the a connection to the db
+     * closes connection after user exits out of args     *
      * @param args
      */
     public static void main(String[] args) {

@@ -54,10 +54,14 @@ public class AddAppointmentController implements Initializable {
     String label;
     private int apptSaveIssue;
     private ObservableList<String> customerNames = FXCollections.observableArrayList();
-    private ObservableList<LocalDateTime> startDateTimes = FXCollections.observableArrayList();
-    private ObservableList<LocalDateTime> endDateTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
+
+    /**
+     * when a date is selected, start and end times are populated
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onDate(ActionEvent event) throws IOException{
 
@@ -90,6 +94,14 @@ public class AddAppointmentController implements Initializable {
             startTime.setItems(startTimes);
         }
     }
+
+    /**
+     * when end time is selected, date and start time fields are checked to ensure a value is present
+     * if value is present, end times will be added to drop down only if there are no collisions with other appointments
+     * if collisions exist, all times equal to and after start times will not be displayed in drop down
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onMouseClickEnd(InputEvent event) throws IOException{
         if(date.getValue() == null){
@@ -132,6 +144,12 @@ public class AddAppointmentController implements Initializable {
             }
         }
     }
+
+    /**
+     * when start time is selected, date field is checked to ensure a value is present
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onMouseClickStart(InputEvent event) throws IOException{
         if(date.getValue() == null){
@@ -150,6 +168,7 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
+     * sets userId
      * @param userId
      */
     public void setUser(int userId) {
@@ -157,6 +176,7 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
+     * cancelling loads the Main Screen
      * @param event
      * @throws IOException
      */
@@ -172,6 +192,7 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
+     * Adding an appointment checks for appointment conflicts again, saves appointment to the db, and loads the main screen
      * @param actionEvent
      */
     public void onAdd(ActionEvent actionEvent) {
@@ -261,8 +282,6 @@ public class AddAppointmentController implements Initializable {
             break;
         }
         if (isApptValid){
-//            LocalDateTime localDateTime = zonedStartDateTimeEST.toLocalDateTime();
-//            LocalDateTime localDateTime1 = zonedEndDateTimeEST.toLocalDateTime();
 
             Timestamp start = Timestamp.valueOf(zonedStartDateTime.toLocalDateTime());
             Timestamp end = Timestamp.valueOf(zonedEndDateTime.toLocalDateTime());
@@ -305,6 +324,8 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
+     * method loads preset values into all applicable fields
+     *
      * @param url
      * @param resourceBundle
      */

@@ -17,6 +17,8 @@ public class Customers {
     private static Statement statement;
 
     /**
+     * gets a list of all countries in db
+     *
      * @return
      */
     public static ObservableList<String> getAllCountries() {
@@ -37,6 +39,7 @@ public class Customers {
     }
 
     /**
+     * gets a list of all customers in the db
      * @return
      */
     public static ObservableList<Customer> getAllCustomers() {
@@ -84,6 +87,8 @@ public class Customers {
 
     }
     /**
+     * updates a customer with new values from input customer
+     *
      * @param customer
      */
     public static void updateCustomer(Customer customer) {
@@ -103,6 +108,8 @@ public class Customers {
     }
 
     /**
+     * gets a new customer id when adding new customers via UI
+     *
      * @return
      */
     public static int getId() {
@@ -130,6 +137,8 @@ public class Customers {
     }
 
     /**
+     * adds a customer to the db
+     *
      * @param customer
      */
     public static void addCustomer(Customer customer) {
@@ -154,6 +163,8 @@ public class Customers {
     }
 
     /**
+     * gets a customer name based on customer ID
+     *
      * @param customerID
      * @return
      */
@@ -177,6 +188,8 @@ public class Customers {
     }
 
     /**
+     * gets a customer ID based on customer name
+     *
      * @param customerName
      * @return
      */
@@ -197,6 +210,8 @@ public class Customers {
     }
 
     /**
+     * soft deletes a customer from the db
+     *
      * @param selectedCustomer
      */
     public static void deleteCustomer(Customer selectedCustomer){

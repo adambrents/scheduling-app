@@ -42,6 +42,9 @@ public class LoginScreenController implements Initializable {
     private Parent scene;
 
     /**
+     * Validates if user exists and if information was entered correctly. Loads main screen
+     * Displays a notification of any upcoming appointments within 15 minutes
+     * writes a log to the login attempts log
      * @param actionEvent
      * @throws IOException
      */
@@ -123,6 +126,8 @@ public class LoginScreenController implements Initializable {
     }
 
     /**
+     * Sets fields to user's system specific details
+     *
      * @param url
      * @param resourceBundle
      */
@@ -141,6 +146,7 @@ public class LoginScreenController implements Initializable {
     }
 
     /**
+     * exits the application
      * @param actionEvent
      */
     public void onExit(ActionEvent actionEvent) {

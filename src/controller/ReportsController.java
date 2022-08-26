@@ -81,6 +81,7 @@ public class ReportsController implements Initializable {
     private Report addReport;
 
     /**
+     * sets UserId
      * @param userId
      */
     public void setUser(int userId) {
@@ -88,6 +89,7 @@ public class ReportsController implements Initializable {
     }
 
     /**
+     * Reloads the screen
      * @param event
      * @throws IOException
      */
@@ -103,6 +105,7 @@ public class ReportsController implements Initializable {
     }
 
     /**
+     * Based on user selection, a report is run and results are shown on the right side of the filters
      * @param actionEvent
      */
     public void onSearch(ActionEvent actionEvent) {
@@ -203,6 +206,7 @@ public class ReportsController implements Initializable {
     }
 
     /**
+     * Loads mainscreen
      * @param actionEvent
      * @throws IOException
      */
@@ -216,6 +220,11 @@ public class ReportsController implements Initializable {
         stage.show();
     }
 
+    /**
+     * Enables, disables, or removes fields that are not applicable based on report chosen
+     * @param event
+     * @throws IOException
+     */
     @FXML
     public void onChooseReport(ActionEvent event) throws IOException{
         if (report.getValue().toString().equalsIgnoreCase(reports.get(0).getReportName())){
@@ -242,6 +251,8 @@ public class ReportsController implements Initializable {
     }
 
     /**
+     * loads all preset data into screen
+     *
      * @param url
      * @param resourceBundle
      */

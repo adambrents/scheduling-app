@@ -35,6 +35,7 @@ public class AddCustomerController implements Initializable {
     private int userId;
 
     /**
+     * sets divisions based on country when a country value is selected
      * @param event
      */
     public void onCountry(ActionEvent event){
@@ -53,6 +54,8 @@ public class AddCustomerController implements Initializable {
     }
 
     /**
+     * on cancel loads the main screen
+     *
      * @param event
      * @throws IOException
      */
@@ -69,7 +72,7 @@ public class AddCustomerController implements Initializable {
     }
 
     /**
-     * Called to add a customer to the database
+     * validates if required fields have values and adds customer to database
      * @param event
      */
     public void onAdd(ActionEvent event){
@@ -122,6 +125,7 @@ public class AddCustomerController implements Initializable {
     }
 
     /**
+     * sets the userId
      * @param userId
      * @return
      */
@@ -130,6 +134,7 @@ public class AddCustomerController implements Initializable {
     }
 
     /**
+     * prepopulates dropdown values and populates customer table
      * @param url
      * @param resourceBundle
      */

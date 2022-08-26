@@ -49,6 +49,7 @@ public class AllAppointmentsController implements Initializable {
     private Appointment selectedAppointment = null;
 
     /**
+     * Sets userId
      * @param userId
      */
     public void setUserId(int userId) {
@@ -56,6 +57,7 @@ public class AllAppointmentsController implements Initializable {
     }
 
     /**
+     * Loads the add appointment screen
      * @param event
      * @throws IOException
      */
@@ -71,6 +73,7 @@ public class AllAppointmentsController implements Initializable {
     }
 
     /**
+     * Warns user of deleting the appointment, then deletes the appointment from the database
      * @param event
      */
     @FXML
@@ -85,7 +88,7 @@ public class AllAppointmentsController implements Initializable {
         Optional<ButtonType> result = alert1.showAndWait();
         if (result.get() == ButtonType.OK) {
             Appointments.deleteAppointment(selectedAppointment);
-            Table.setItems(Appointments.getWeeklyAppointments());
+            Table.setItems(Appointments.getAllAppointments());
         }
         else {
             alert1.close();
@@ -94,6 +97,7 @@ public class AllAppointmentsController implements Initializable {
     }
 
     /**
+     * loads the main screen
      * @param event
      * @throws IOException
      */
@@ -109,6 +113,7 @@ public class AllAppointmentsController implements Initializable {
     }
 
     /**
+     * loads all appointments into table for user to view
      * @param url
      * @param resourceBundle
      */

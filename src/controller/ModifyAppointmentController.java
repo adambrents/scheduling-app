@@ -55,7 +55,11 @@ public class ModifyAppointmentController implements Initializable {
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
     private int appointmentId;
-
+    /**
+     * when a date is selected, start and end times are populated
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onDate(ActionEvent event) throws IOException{
 
@@ -90,6 +94,13 @@ public class ModifyAppointmentController implements Initializable {
 
         }
     }
+    /**
+     * when end time is selected, date and start time fields are checked to ensure a value is present
+     * if value is present, end times will be added to drop down only if there are no collisions with other appointments
+     * if collisions exist, all times equal to and after start times will not be displayed in drop down
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onMouseClickEnd(InputEvent event) throws IOException{
         if(date.getValue() == null){
@@ -132,6 +143,11 @@ public class ModifyAppointmentController implements Initializable {
             }
         }
     }
+    /**
+     * when start time is selected, date field is checked to ensure a value is present
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void onMouseClickStart(InputEvent event) throws IOException{
         if(date.getValue() == null){
@@ -174,6 +190,8 @@ public class ModifyAppointmentController implements Initializable {
     }
 
     /**
+     * loads all appointment information into the modify appointment screen to be changed and reviewed
+     *
      * @param selectedAppointment
      */
     public void setAppointment(Appointment selectedAppointment) {
@@ -229,6 +247,7 @@ public class ModifyAppointmentController implements Initializable {
     }
 
     /**
+     * cancelling loads the Main Screen
      * @param actionEvent
      * @throws IOException
      */
@@ -243,6 +262,7 @@ public class ModifyAppointmentController implements Initializable {
     }
 
     /**
+     * sets userId
      * @param userId
      */
     public void setUser(int userId) {
@@ -250,6 +270,7 @@ public class ModifyAppointmentController implements Initializable {
     }
 
     /**
+     * Updating an appointment checks for appointment conflicts again, saves appointment to the db, and loads the main screen
      * @param actionEvent
      */
     public void onUpdate(ActionEvent actionEvent) {
@@ -357,6 +378,8 @@ public class ModifyAppointmentController implements Initializable {
     }
 
     /**
+     * method loads preset values into all applicable fields
+     *
      * @param url
      * @param resourceBundle
      */

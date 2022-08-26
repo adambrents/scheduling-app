@@ -37,6 +37,7 @@ public class Appointments {
     private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
 
     /**
+     * query returns a list of all appointments in database
      * @return
      */
     public static ObservableList<Appointment> getAllAppointments(){
@@ -77,6 +78,7 @@ public class Appointments {
     }
 
     /**
+     * query adds input appointments to the database
      * @param appointment
      * @return
      */
@@ -162,6 +164,8 @@ public class Appointments {
     }
 
     /**
+     * query updates appointments in the database
+     *
      * @param appointment
      * @return
      */
@@ -246,6 +250,8 @@ public class Appointments {
     }
 
     /**
+     * query returns the latest appointment ID in order to generate an ID in the UI and insert it later
+     *
      * @return
      */
     public static int getId() {
@@ -270,6 +276,7 @@ public class Appointments {
     }
 
     /**
+     * soft deletes an appointment from the db - sets all values to NULL except a few
      * @param appointment
      * @return
      */
@@ -284,6 +291,10 @@ public class Appointments {
         return false;
     }
 
+    /**
+     * soft deletes all appointments related to a given customer
+     * @param customerId
+     */
     public static void deleteAppointment(int customerId){
         try{
             PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
@@ -296,6 +307,8 @@ public class Appointments {
     }
 
     /**
+     * gets all appointments in the upcoming week
+     *
      * @return
      */
     public static ObservableList<Appointment> getWeeklyAppointments(){
@@ -345,6 +358,7 @@ public class Appointments {
     }
 
     /**
+     * gets all appointments in the upcoming month
      * @return
      */
     public static ObservableList<Appointment> getMonthlyAppointments(){
@@ -402,6 +416,8 @@ public class Appointments {
     }
 
     /**
+     * gets all unique appointments from the db
+     *
      * @return
      * @throws SQLException
      */
@@ -422,6 +438,8 @@ public class Appointments {
     }
 
     /**
+     * gets a count of all appointments within a given month and appointment type
+     *
      * @param localDateTime
      * @param type
      * @return
@@ -450,6 +468,8 @@ public class Appointments {
     }
 
     /**
+     * gets all appointments related to a given contact
+     *
      * @param contact
      * @return
      */
@@ -492,6 +512,8 @@ public class Appointments {
     }
 
     /**
+     * checks to see if a customer has any appointments scheduled
+     *
      * @param selectedCustomer
      * @return
      */
@@ -519,6 +541,8 @@ public class Appointments {
     }
 
     /**
+     * returns a list of appointments for a given division and contact
+     *
      * @param selectedDivision
      * @param contact
      * @return
@@ -564,6 +588,8 @@ public class Appointments {
     }
 
     /**
+     * gets all appointments and the division they are related to
+     *
      * @param appointmentId
      * @return
      */
@@ -590,6 +616,8 @@ public class Appointments {
     }
 
     /**
+     * gets the soonest appointment in the next 15 minutes
+     *
      * @return
      */
     public static Appointment get15MinAppt(){
@@ -630,6 +658,12 @@ public class Appointments {
         }
     }
 
+    /**
+     * gets all taken start times on a given day of the month
+     *
+     * @param localDate
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAllStartTimesByDate(LocalDate localDate){
         allStartTimes.clear();
         try {
@@ -647,6 +681,12 @@ public class Appointments {
         return startAvailableTimes;
 
     }
+
+    /**
+     * gets all taken end times on a given day of the month
+     * @param localDate
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAllEndTimesByDate(LocalDate localDate){
         allEndTimes.clear();
         try {
@@ -663,6 +703,14 @@ public class Appointments {
         endAvailableTimes = TimeHelper.getAvailableTimes(allEndTimes);
         return endAvailableTimes;
     }
+
+    /**
+     * provides a boolean of if a given pair of start and end times are valid
+     *
+     * @param possibleStart
+     * @param possibleEnd
+     * @return
+     */
     public static boolean validTimes(LocalDateTime possibleStart, LocalDateTime possibleEnd){
         ZonedDateTime possibleStartZoned = possibleStart.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
         ZonedDateTime possibleEndZoned = possibleEnd.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));

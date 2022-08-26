@@ -23,6 +23,8 @@ public class Appointment {
     private String contactName;
 
     /**
+     * constructor for appointments
+     *
      * @param appointmentID
      * @param title
      * @param description
@@ -57,6 +59,8 @@ public class Appointment {
     }
 
     /**
+     * gets appt id
+     *
      * @return
      */
     public int getAppointmentID() {
@@ -64,6 +68,7 @@ public class Appointment {
     }
 
     /**
+     * sets appt id
      * @param appointmentID
      */
     public void setAppointmentID(int appointmentID) {
@@ -71,6 +76,8 @@ public class Appointment {
     }
 
     /**
+     * gets title
+     *
      * @return
      */
     public String getTitle() {
@@ -78,6 +85,7 @@ public class Appointment {
     }
 
     /**
+     * sets title
      * @param title
      */
     public void setTitle(String title) {
@@ -85,6 +93,7 @@ public class Appointment {
     }
 
     /**
+     * gets description
      * @return
      */
     public String getDescription() {
@@ -92,6 +101,7 @@ public class Appointment {
     }
 
     /**
+     * sets description
      * @param description
      */
     public void setDescription(String description) {
@@ -99,6 +109,7 @@ public class Appointment {
     }
 
     /**
+     * gets location
      * @return
      */
     public String getLocation() {
@@ -106,6 +117,7 @@ public class Appointment {
     }
 
     /**
+     * sets location
      * @param location
      */
     public void setLocation(String location) {
@@ -113,6 +125,7 @@ public class Appointment {
     }
 
     /**
+     * gets type
      * @return
      */
     public String getType() {
@@ -120,6 +133,7 @@ public class Appointment {
     }
 
     /**
+     * sets type
      * @param type
      */
     public void setType(String type) {
@@ -127,6 +141,7 @@ public class Appointment {
     }
 
     /**
+     * gets start
      * @return
      */
     public Timestamp getStart() {
@@ -134,6 +149,7 @@ public class Appointment {
     }
 
     /**
+     * sets start
      * @param start
      */
     public void setStart(Timestamp start) {
@@ -141,6 +157,7 @@ public class Appointment {
     }
 
     /**
+     * gets end
      * @return
      */
     public Timestamp getEnd() {
@@ -148,6 +165,7 @@ public class Appointment {
     }
 
     /**
+     * sets end
      * @param end
      */
     public void setEnd(Timestamp end) {
@@ -155,6 +173,7 @@ public class Appointment {
     }
 
     /**
+     * gets customerID
      * @return
      */
     public int getCustomerID() {
@@ -162,6 +181,7 @@ public class Appointment {
     }
 
     /**
+     * sets customer Id
      * @param customerID
      */
     public void setCustomerID(int customerID) {
@@ -169,6 +189,7 @@ public class Appointment {
     }
 
     /**
+     * gets user ID
      * @return
      */
     public int getUserID() {
@@ -176,6 +197,7 @@ public class Appointment {
     }
 
     /**
+     * set UserId
      * @param userID
      */
     public void setUserID(int userID) {
@@ -183,6 +205,7 @@ public class Appointment {
     }
 
     /**
+     * get Contact Id
      * @return
      */
     public int getContactID() {
@@ -190,6 +213,7 @@ public class Appointment {
     }
 
     /**
+     * sets ContactId
      * @param contactID
      */
     public void setContactID(int contactID) {
@@ -197,6 +221,8 @@ public class Appointment {
     }
 
     /**
+     * gets StartDate
+     *
      * @return
      */
     public LocalDate getStartDate() {
@@ -204,6 +230,7 @@ public class Appointment {
     }
 
     /**
+     * sets startDate
      * @param startDate
      */
     public void setStartDate(LocalDate startDate) {
@@ -211,6 +238,7 @@ public class Appointment {
     }
 
     /**
+     * gets Start Time
      * @return
      */
     public LocalTime getStartTime() {
@@ -218,6 +246,7 @@ public class Appointment {
     }
 
     /**
+     * sets Start Time
      * @param startTime
      */
     public void setStartTime(LocalTime startTime) {
@@ -225,6 +254,7 @@ public class Appointment {
     }
 
     /**
+     * gets end Time
      * @return
      */
     public LocalTime getEndTime() {
@@ -232,6 +262,7 @@ public class Appointment {
     }
 
     /**
+     * sets end time
      * @param endTime
      */
     public void setEndTime(LocalTime endTime) {
@@ -239,6 +270,7 @@ public class Appointment {
     }
 
     /**
+     * gets division
      * @return
      */
     public String getDivision() {
@@ -246,16 +278,25 @@ public class Appointment {
     }
 
     /**
+     * sets division
      * @param division
      */
     public void setDivision(String division) {
         this.division = division;
     }
 
+    /**
+     * gets contact name
+     * @return
+     */
     public String getContactName() {
         return contactName;
     }
 
+    /**
+     * sets contact name
+     * @param contactName
+     */
     public void setContactName(String contactName) {
         this.contactName = contactName;
     }

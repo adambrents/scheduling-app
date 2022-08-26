@@ -4,6 +4,7 @@ public class User {
     private String username;
 
     /**
+     * getter/setter for User
      * @return
      */
     public String getUsername(){
@@ -11,6 +12,7 @@ public class User {
     }
 
     /**
+     * getter/setter for User
      * @param username
      */
     public void setUserName(String username){

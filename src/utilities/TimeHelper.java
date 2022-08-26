@@ -16,6 +16,7 @@ public class TimeHelper {
     private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
 
     /**
+     * returns a list of available times with taken times removed - doesn't work
      * @return
      */
     public static ObservableList<LocalDateTime> getAvailableTimes(ObservableList<LocalDateTime> localDateTimes){
@@ -39,6 +40,10 @@ public class TimeHelper {
         return startAvailableTimes;
     }
 
+    /**
+     * gets a list of times from 12am-12am in 30 minute intervals
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAvailableTimes(){
         startAvailableTimes.clear();
         endAvailableTimes.clear();
@@ -53,6 +58,11 @@ public class TimeHelper {
         return startAvailableTimes;
     }
 
+    /**
+     * converts UTC to the user's system time
+     * @param date
+     * @return
+     */
     public static Date UTCtoLocalDate(Date date) {
 
         String timeZone = Calendar.getInstance().getTimeZone().getID();
@@ -61,6 +71,8 @@ public class TimeHelper {
     }
 
     /**
+     * returns the EndAvailableTimes list
+     *
      * @return
      */
     public static ObservableList<LocalDateTime> getEndAvailableTimes(){

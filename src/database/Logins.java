@@ -11,6 +11,8 @@ public class Logins {
     private static Statement statement;
 
     /**
+     * provides a true/false value for if a logging in user exists in the db
+     *
      * @param UserName
      * @param Password
      * @return
@@ -35,6 +37,8 @@ public class Logins {
     }
 
     /**
+     * provides a true/false value for if a logging in username exists in the db
+     *
      * @param UserName
      * @return
      */
@@ -58,6 +62,8 @@ public class Logins {
     }
 
     /**
+     * gets userid from the database based on the username provided by the user
+     *
      * @param userName
      * @return
      */

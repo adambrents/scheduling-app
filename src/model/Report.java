@@ -8,6 +8,7 @@ public class Report {
     private int reportId;
 
     /**
+     * constructor for Report
      * @param reportName
      * @param reportId
      */
@@ -16,18 +17,34 @@ public class Report {
         this.reportId = reportId;
     }
 
+    /**
+     * getter/setter for Report
+     * @return
+     */
     public String getReportName() {
         return reportName;
     }
 
+    /**
+     * getter/setter for Report
+     * @param reportName
+     */
     public void setReportName(String reportName) {
         this.reportName = reportName;
     }
 
+    /**
+     * getter/setter for Report
+     * @return
+     */
     public int getReportId() {
         return reportId;
     }
 
+    /**
+     * getter/setter for Report
+     * @param reportId
+     */
     public void setReportId(int reportId) {
         this.reportId = reportId;
     }

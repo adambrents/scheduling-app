@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 public class Times {
     public static int officeClosureReason = 0;
     /**
+     * gets the current time in UTC from the database
      * @return
      */
     public static java.sql.Timestamp getTimeStamp(){
@@ -18,6 +19,11 @@ public class Times {
         return timestamp;
     }
 
+    /**
+     * returns specific error text relating to time issues
+     * @param errorMsgNo
+     * @return
+     */
     public static String errorText(int errorMsgNo){
         String errorMsg = "";
         if(errorMsgNo == 1){

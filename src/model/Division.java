@@ -6,6 +6,7 @@ public class Division {
     private int countryID;
 
     /**
+     * constructor for division
      * @param name
      * @param countryID
      */
@@ -14,18 +15,34 @@ public class Division {
         this.countryID = countryID;
     }
 
+    /**
+     * getter/setter for division
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * getter/setter for division
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * getter/setter for division
+     * @return
+     */
     public int getCountryID() {
         return countryID;
     }
 
+    /**
+     * getter/setter for division
+     * @param countryID
+     */
     public void setCountryID(int countryID) {
         this.countryID = countryID;
     }

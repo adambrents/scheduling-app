@@ -10,6 +10,7 @@ import java.sql.Statement;
 
 public class JDBCConnectionHelper {
     /**
+     * gets statement to run queries in db
      * @return
      */
     public static Statement getStatement(){

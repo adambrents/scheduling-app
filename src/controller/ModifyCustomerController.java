@@ -38,6 +38,7 @@ public class ModifyCustomerController implements Initializable {
     private int userId;
 
     /**
+     * prepopulates dropdown values and populates customer table
      * @param url
      * @param resourceBundle
      */
@@ -82,8 +83,8 @@ public class ModifyCustomerController implements Initializable {
 
 
     }
-
     /**
+     * sets divisions based on country when a country value is selected
      * @param actionEvent
      */
     public void onCountry(ActionEvent actionEvent) {
@@ -106,6 +107,8 @@ public class ModifyCustomerController implements Initializable {
     }
 
     /**
+     * on cancel loads the main screen
+     *
      * @param actionEvent
      * @throws IOException
      */
@@ -120,8 +123,8 @@ public class ModifyCustomerController implements Initializable {
     }
 
     /**
+     * validates if required fields have values and updates customer in the database
      * @param actionEvent
-     * @throws IOException
      */
     public void onUpdate(ActionEvent actionEvent) throws IOException {
         boolean valid = true;
@@ -166,6 +169,7 @@ public class ModifyCustomerController implements Initializable {
     }
 
     /**
+     * sets the userId
      * @param userId
      */
     public void setUserId(int userId) {

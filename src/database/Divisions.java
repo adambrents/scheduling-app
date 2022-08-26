@@ -21,6 +21,7 @@ public class Divisions {
     private static String divisionName;
 
     /**
+     * gets a list of divisions in the US
      * @return
      */
     public static ObservableList<String> getUnitedStatesDivision() {
@@ -41,6 +42,8 @@ public class Divisions {
     }
 
     /**
+     * gets a list of divisions in canada
+     *
      * @return
      */
     public static ObservableList<String> getCanadaDivision() {
@@ -61,6 +64,8 @@ public class Divisions {
     }
 
     /**
+     * gets a list of divisions in the UK
+     *
      * @return
      */
     public static ObservableList<String> getUnitedKingdomDivision() {
@@ -81,6 +86,7 @@ public class Divisions {
     }
 
     /**
+     * gets the division ID based on the division name
      * @param divisionName
      * @return
      */
@@ -100,6 +106,8 @@ public class Divisions {
     }
 
     /**
+     * returns a list of all division names
+     *
      * @return
      */
     public static ObservableList<String> getAllDivisionNames() {

@@ -140,7 +140,7 @@ public class MainScreenController implements Initializable {
     }
     /**
      * When the delete customer button is clicked, validate request with user then proceed with deleting from db(and ui table)
-     * Also validates delete eligibility
+     * Also validates delete eligibility and deletes any associated appointments if applicable
      * @param actionEvent
      */
     public void onDeleteCustomer(ActionEvent actionEvent) {
@@ -288,6 +288,8 @@ public class MainScreenController implements Initializable {
     }
 
     /**
+     * when clicked, user is warned of deleting appointment, then appointment is deleted
+     *
      * @param actionEvent
      */
     public void onDeleteAppointment(ActionEvent actionEvent) {
@@ -328,6 +330,7 @@ public class MainScreenController implements Initializable {
 
 
     /**
+     * sets userId
      * @param user
      */
     public void setUser(int user) {
@@ -335,6 +338,7 @@ public class MainScreenController implements Initializable {
     }
 
     /**
+     * Loads reports screen
      * @param actionEvent
      * @throws IOException
      */
@@ -349,6 +353,8 @@ public class MainScreenController implements Initializable {
     }
 
     /**
+     * loads allappointments screen
+     *
      * @param actionEvent
      * @throws IOException
      */

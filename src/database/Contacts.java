@@ -13,6 +13,7 @@ public class Contacts {
     private static Statement statement;
 
     /**
+     * gets a list of all contact names
      * @return
      */
     public static ObservableList<String> getAllContacts(){
@@ -34,6 +35,7 @@ public class Contacts {
     }
 
     /**
+     * gets a list of all contact ids based on contact names
      * @param contactName
      * @return
      */
@@ -52,6 +54,7 @@ public class Contacts {
     }
 
     /**
+     * gets a list of all contact names based on contact ids
      * @param contactID
      * @return
      */
