@@ -151,17 +151,26 @@ public class MainScreenController implements Initializable {
             alert1.setContentText("Do you want to delete this customer?");
             Optional<ButtonType> result = alert1.showAndWait();
             if (result.get() == ButtonType.OK) {
-                if(Appointments.checkForAppointments(selectedCustomer)){
-                    Customers.deleteCustomer(selectedCustomer);
-                    customersTable.setItems(Customers.getAllCustomers());
-                    return;
-                }
-                else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Appointments Exist");
-                    alert.setContentText("You may not delete a customer with appointments scheduled :(");
-                    alert.showAndWait();
+                try {
+                    if(Appointments.checkForAppointments(selectedCustomer)){
+                        Customers.deleteCustomer(selectedCustomer);
+                        customersTable.setItems(Customers.getAllCustomers());
+                        return;
+                    }
+                    if(!Appointments.checkForAppointments(selectedCustomer)){
+                        Appointments.deleteAppointment(selectedCustomer.getId());
+                        Customers.deleteCustomer(selectedCustomer);
+                        customersTable.setItems(Customers.getAllCustomers());
+                        return;
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Error");
+                        alert.setContentText("Issue deleting customer - see console for details");
+                    }
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
                 }
             } else {
                 alert1.close();
@@ -190,7 +199,7 @@ public class MainScreenController implements Initializable {
         titleWeek.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionWeek.setCellValueFactory(new PropertyValueFactory<>("description"));
         locationWeek.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactWeek.setCellValueFactory(new PropertyValueFactory<>("contactID"));
+        contactWeek.setCellValueFactory(new PropertyValueFactory<>("contactName"));
         typeWeek.setCellValueFactory(new PropertyValueFactory<>("type"));
         startWeek.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endWeek.setCellValueFactory(new PropertyValueFactory<>("endTime"));
@@ -206,7 +215,7 @@ public class MainScreenController implements Initializable {
         titleMonth.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionMonth.setCellValueFactory(new PropertyValueFactory<>("description"));
         locationMonth.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactMonth.setCellValueFactory(new PropertyValueFactory<>("contactID"));
+        contactMonth.setCellValueFactory(new PropertyValueFactory<>("contactName"));
         typeMonth.setCellValueFactory(new PropertyValueFactory<>("type"));
         startMonth.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endMonth.setCellValueFactory(new PropertyValueFactory<>("endTime"));
@@ -282,23 +291,41 @@ public class MainScreenController implements Initializable {
      * @param actionEvent
      */
     public void onDeleteAppointment(ActionEvent actionEvent) {
-        if(thisWeekTab.isSelected()) {
+        if (thisWeekTab.isSelected()) {
             selectedAppointment = ((Appointment) weekTable.getSelectionModel().getSelectedItem());
-            if(selectedAppointment == null){
+            if (selectedAppointment == null) {
                 return;
             }
-            Appointments.deleteAppointment(selectedAppointment);
-            weekTable.setItems(Appointments.getWeeklyAppointments());
-        }
-        else if(thisMonthTab.isSelected()) {
+            Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
+            alert1.setHeaderText("Delete");
+            alert1.setContentText("Are you sure you want to delete Appointment_ID: " + selectedAppointment.getAppointmentID() + ", Type: " + selectedAppointment.getType() + "?");
+            Optional<ButtonType> result = alert1.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                Appointments.deleteAppointment(selectedAppointment);
+                weekTable.setItems(Appointments.getWeeklyAppointments());
+            }
+            else {
+                alert1.close();
+            }
+        } else if (thisMonthTab.isSelected()) {
             selectedAppointment = ((Appointment) monthTable.getSelectionModel().getSelectedItem());
-            if(selectedAppointment == null){
+            if (selectedAppointment == null) {
                 return;
             }
-            Appointments.deleteAppointment(selectedAppointment);
-            monthTable.setItems(Appointments.getMonthlyAppointments());
+            Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
+            alert1.setHeaderText("Delete");
+            alert1.setContentText("Are you sure you want to delete Appointment_ID: " + selectedAppointment.getAppointmentID() + ", Type: " + selectedAppointment.getType() + "?");
+            Optional<ButtonType> result = alert1.showAndWait();
+            if (result.get() == ButtonType.OK){
+                Appointments.deleteAppointment(selectedAppointment);
+                monthTable.setItems(Appointments.getMonthlyAppointments());
+            }
+            else {
+                alert1.close();
+            }
         }
     }
+
 
     /**
      * @param user

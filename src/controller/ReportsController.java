@@ -35,6 +35,8 @@ public class ReportsController implements Initializable {
     @FXML
     private Label appointmentNumber;
     @FXML
+    private Label totalAppointments;
+    @FXML
     private ComboBox contactBox;
     @FXML
     private TableColumn customerID;
@@ -75,7 +77,8 @@ public class ReportsController implements Initializable {
     public ObservableList<String> yearsList = FXCollections.observableArrayList();
     public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     private ObservableList<String> reportsList = FXCollections.observableArrayList();
-    private Report reports;
+    private ObservableList<Report> reports = FXCollections.observableArrayList();
+    private Report addReport;
 
     /**
      * @param userId
@@ -103,16 +106,42 @@ public class ReportsController implements Initializable {
      * @param actionEvent
      */
     public void onSearch(ActionEvent actionEvent) {
-        if((types.getValue() == null) || (years.getValue() == null) || (months.getValue() == null) || (report.getValue() == null)
-                || (contactBox.getValue() == null)){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error");
-            alert.setContentText("You must select a value in every combo box");
-            alert.showAndWait();
-            return;
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(0).getReportName())) {
+            if((types.getValue() == null) || (years.getValue() == null) || (months.getValue() == null) || (report.getValue() == null)
+                    || (contactBox.getValue() == null)){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error");
+                alert.setContentText("You must select a value in every combo box");
+                alert.showAndWait();
+                return;
+            }
+            String contact = contactBox.getValue().toString();
+            appointments = Appointments.getContactAppointments(contact);
+            totalAppointments.setVisible(false);
+            appointmentNumber.setVisible(false);
         }
 
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(1).getReportName())){
+            totalAppointments.setVisible(true);
+            appointmentNumber.setVisible(true);
+        }
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(2).getReportName())){
+            table.setDisable(false);
+            if((types.getValue() == null) || (years.getValue() == null) || (months.getValue() == null) || (report.getValue() == null)
+                    || (contactBox.getValue() == null) || (divisions.getValue() == null)){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error");
+                alert.setContentText("You must select a value in every combo box");
+                alert.showAndWait();
+                return;
+            }
+            String contact = contactBox.getValue().toString();
+            appointments = Appointments.getDivisionAppointmentsList(divisions.getValue().toString(), contact);
+            totalAppointments.setVisible(false);
+            appointmentNumber.setVisible(false);
+        }
         String apptType = types.getValue().toString();
         int year = parseInt(years.getValue().toString());
         int yearNumber = 2024;
@@ -142,18 +171,7 @@ public class ReportsController implements Initializable {
         String y = String.valueOf(x);
         appointmentNumber.setText(y);
 
-        String contact = contactBox.getValue().toString();
-
-        if (divisions.getValue() == null){
-            appointments = Appointments.getContactAppointments(contact);
-        }
-        else {
-            appointments = Appointments.getDivisionAppointmentsList(divisions.getValue().toString(), contact);
-        }
-
-        table.setItems(appointments);
-
-        if (report.getValue().toString().equalsIgnoreCase(reports.getReportName())){
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(0).getReportName())){
             id.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
             title.setCellValueFactory(new PropertyValueFactory<>("title"));
             description.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -163,8 +181,22 @@ public class ReportsController implements Initializable {
             customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
             type.setCellValueFactory(new PropertyValueFactory<>("type"));
             division.setCellValueFactory(new PropertyValueFactory<>("division"));
+
+            table.setItems(appointments);
         }//TODO possible implementation - add additional if statements for each report and how table is manipulated accordingly
-        else{
+        else if (report.getValue().toString().equalsIgnoreCase(reports.get(2).getReportName())) {
+            id.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+            title.setCellValueFactory(new PropertyValueFactory<>("title"));
+            description.setCellValueFactory(new PropertyValueFactory<>("description"));
+            startDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+            startTime.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+            endTime.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+            customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+            type.setCellValueFactory(new PropertyValueFactory<>("type"));
+            division.setCellValueFactory(new PropertyValueFactory<>("division"));
+            table.setItems(appointments);
+        }
+        else {
             //do nothing in case of else
         }
 
@@ -183,6 +215,32 @@ public class ReportsController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
+
+    @FXML
+    public void onChooseReport(ActionEvent event) throws IOException{
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(0).getReportName())){
+            divisions.setDisable(true);
+            contactBox.setDisable(false);
+            totalAppointments.setVisible(false);
+            appointmentNumber.setVisible(false);
+            table.setDisable(false);
+        }
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(1).getReportName())){
+            divisions.setDisable(true);
+            contactBox.setDisable(true);
+            totalAppointments.setVisible(true);
+            appointmentNumber.setVisible(true);
+            table.setDisable(true);
+        }
+        if (report.getValue().toString().equalsIgnoreCase(reports.get(2).getReportName())){
+            divisions.setDisable(false);
+            contactBox.setDisable(false);
+            totalAppointments.setVisible(false);
+            appointmentNumber.setVisible(false);
+            table.setDisable(false);
+        }
+    }
+
     /**
      * @param url
      * @param resourceBundle
@@ -193,9 +251,17 @@ public class ReportsController implements Initializable {
         yearsList.clear();
 
         try {//TODO Add reports to db and make this a getter call for all reports available
-            reports = new Report("Customer Appointment", 1);
-            reportsList.add(reports.getReportName());
-
+            addReport = new Report("Appointment Schedule", 1);
+            reports.add(addReport);
+            addReport = new Report("Total Customer Appointments by Type", 2);
+            reports.add(addReport);
+            addReport = new Report("Appointment Schedule by Division", 3);
+            reports.add(addReport);
+            int index = 0;
+            while (index < reports.size()){
+                reportsList.add(reports.get(index).getReportName());
+                index++;
+            }
             report.setItems(reportsList);
         }catch (Exception e){
             System.out.println("Error: " + e);
@@ -213,4 +279,5 @@ public class ReportsController implements Initializable {
         contactBox.setItems(Contacts.getAllContacts());
         divisions.setItems(Divisions.getAllDivisionNames());
     }
+
 }

@@ -6,11 +6,10 @@ import model.Appointment;
 import model.Customer;
 import model.Division;
 import utilities.JDBCConnectionHelper;
+import utilities.TimeHelper;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 public class Appointments {
 
@@ -23,6 +22,8 @@ public class Appointments {
     private static ObservableList<String> customerAppointmentExists = FXCollections.observableArrayList();
     private static ObservableList<Appointment> divisionAppointments = FXCollections.observableArrayList();
     private static ObservableList<Appointment> appointmentsInDivision = FXCollections.observableArrayList();
+    private static ObservableList<LocalDateTime> allStartTimes = FXCollections.observableArrayList();
+    private static ObservableList<LocalDateTime> allEndTimes = FXCollections.observableArrayList();
     private static boolean valid = true;
     public static boolean conflict = false;
     private static Statement statement;
@@ -30,6 +31,10 @@ public class Appointments {
     private static int divisionCount;
     private static String divisionAppointment;
     private static int contactID;
+    private static String division = null;
+
+    private static ObservableList<LocalDateTime> startAvailableTimes = FXCollections.observableArrayList();
+    private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
 
     /**
      * @return
@@ -57,9 +62,10 @@ public class Appointments {
                         resultSet.getInt(13),
                         resultSet.getInt(14),
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp(6).toLocalDateTime().toLocalTime(),
-                        resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division"));
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(6)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(7)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        resultSet.getString("Division"),
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 allAppointments.add(appointment);
             }
             statement.close();
@@ -88,7 +94,8 @@ public class Appointments {
             String query = "SELECT * FROM client_schedule.appointments WHERE customer_ID=" + appointment.getCustomerID() + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                Appointment customerAppointment = new Appointment(resultSet.getInt(1),
+                Appointment customerAppointment = new Appointment(
+                        resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
                         resultSet.getString(4),
@@ -101,7 +108,8 @@ public class Appointments {
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalTime(),
                         resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division"));
+                        division,
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 customerAppointments.add(customerAppointment);
             }
             statement.close();
@@ -131,9 +139,18 @@ public class Appointments {
                 }
             }
             try{
-                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement("INSERT INTO appointments VALUES(" + appointment.getAppointmentID() + ", '" +
-                        appointment.getTitle() + "', '" + appointment.getDescription() + "', '" + appointment.getLocation() + "', '" + appointment.getType() + "', '" + Timestamp.valueOf(appStart)
-                        + "', '" + Timestamp.valueOf(appEnd) + "', NOW(), 'User', NOW(), 'User', " + appointment.getCustomerID() + ", " + appointment.getUserID() + ", " + appointment.getContactID() + ");");
+                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(
+                        "INSERT INTO appointments VALUES(" +
+                                appointment.getAppointmentID() + ", '" +
+                                appointment.getTitle() + "', '" +
+                                appointment.getDescription() + "', '" +
+                                appointment.getLocation() + "', '" +
+                                appointment.getType() + "', '" +
+                                Timestamp.valueOf(appStart) + "', '" +
+                                Timestamp.valueOf(appEnd) + "', NOW(), 'User', NOW(), 'User', " +
+                                appointment.getCustomerID() + ", " +
+                                appointment.getUserID() + ", " +
+                                appointment.getContactID() + ");");
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
                 return true;
@@ -176,7 +193,8 @@ public class Appointments {
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalTime(),
                         resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division"));
+                        division,
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 if(customerAppointment.getAppointmentID() == appointment.getAppointmentID()){
                     //does nothing with the appointment if it has the same id
                     conflict = true;
@@ -266,6 +284,17 @@ public class Appointments {
         return false;
     }
 
+    public static void deleteAppointment(int customerId){
+        try{
+            PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
+                " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Customer_ID=" + customerId + " AND Title IS NOT NULL;");
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @return
      */
@@ -280,8 +309,9 @@ public class Appointments {
                          + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                Appointment appointment = new Appointment(resultSet.getInt(1),
-                        resultSet.getString("Appointment_ID"),
+                Appointment appointment = new Appointment(
+                        resultSet.getInt("Appointment_ID"),
+                        resultSet.getString("Title"),
                         resultSet.getString("Description"),
                         resultSet.getString("Location"),
                         resultSet.getString("Type"),
@@ -291,9 +321,10 @@ public class Appointments {
                         resultSet.getInt("User_ID"),
                         resultSet.getInt("Contact_ID"),
                         resultSet.getTimestamp("Start").toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp("Start").toLocalDateTime().toLocalTime(),
-                        resultSet.getTimestamp("End").toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division"));
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(6)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(7)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        resultSet.getString("Division"),
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 LocalDateTime localDateTime = appointment.getStart().toLocalDateTime();
                 LocalDateTime nowTime = LocalDateTime.now();
                 ZonedDateTime nowTimeEST = nowTime.atZone(ZoneId.of("America/New_York"));
@@ -327,8 +358,9 @@ public class Appointments {
                          + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                Appointment appointment = new Appointment(resultSet.getInt(1),
-                        resultSet.getString("Appointment_ID"),
+                Appointment appointment = new Appointment(
+                        resultSet.getInt("Appointment_ID"),
+                        resultSet.getString("Title"),
                         resultSet.getString("Description"),
                         resultSet.getString("Location"),
                         resultSet.getString("Type"),
@@ -338,13 +370,22 @@ public class Appointments {
                         resultSet.getInt("User_ID"),
                         resultSet.getInt("Contact_ID"),
                         resultSet.getTimestamp("Start").toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp("Start").toLocalDateTime().toLocalTime(),
-                        resultSet.getTimestamp("End").toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division"));
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(6)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(7)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        resultSet.getString("Division"),
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 LocalDateTime localDateTime = appointment.getStart().toLocalDateTime();
                 LocalDateTime nowTime = LocalDateTime.now();
                 ZonedDateTime nowTimeEST = nowTime.atZone(ZoneId.of("America/New_York"));
                 LocalDateTime est = nowTimeEST.toLocalDateTime();
+
+//                LocalDateTime startDateTime = appointment.getStart().toLocalDateTime();
+//                LocalDateTime endDateTime = appointment.getEnd().toLocalDateTime();
+//                ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
+//                ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
+//
+//                appointment.setStartTime(zonedStartDateTime.withFixedOffsetZone().toLocalTime());
+//                appointment.setEndTime(zonedEndDateTime.withFixedOffsetZone().toLocalTime());
                 if(localDateTime.isBefore(est.plusDays(30)) && localDateTime.isAfter(est)){
                     monthlyAppointments.add(appointment);
                 }
@@ -368,7 +409,7 @@ public class Appointments {
         allTypes.clear();
         try {
             statement = JDBCConnectionHelper.getStatement();
-            String query = "SELECT Type FROM client_schedule.appointments WHERE Title IS NOT NULL;";
+            String query = "SELECT DISTINCT Type FROM client_schedule.appointments WHERE Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 allTypes.add(resultSet.getString(1));
@@ -436,10 +477,10 @@ public class Appointments {
                         resultSet.getInt(13),
                         resultSet.getInt(14),
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp(6).toLocalDateTime().toLocalTime(),
-                        resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division")
-                );
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(6)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(7)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        resultSet.getString("Division"),
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 contactAppointments.add(appointment);
             }
             statement.close();
@@ -510,8 +551,8 @@ public class Appointments {
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
                         resultSet.getTimestamp(6).toLocalDateTime().toLocalTime(),
                         resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
-                        resultSet.getString("Division")
-                );
+                        resultSet.getString("Division"),
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 appointmentsInDivision.add(appointment);
             }
             statement.close();
@@ -547,4 +588,140 @@ public class Appointments {
         }
 
     }
+
+    /**
+     * @return
+     */
+    public static Appointment get15MinAppt(){
+
+        try{
+            String sql = "SELECT * FROM client_schedule.appointments AS a WHERE Start>UTC_TIMESTAMP AND minute(Start)<minute(Start)+minute(15) ORDER BY Start ASC LIMIT 1; ";
+            preparedStatement = JDBC.getConnection().prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (preparedStatement.getResultSet() == null){
+                return null;
+            }
+            if (resultSet.next()){
+                Appointment appointment = new Appointment(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getString(5),
+                        resultSet.getTimestamp(6),
+                        resultSet.getTimestamp(7),
+                        resultSet.getInt(12),
+                        resultSet.getInt(13),
+                        resultSet.getInt(14),
+                        resultSet.getTimestamp(6).toLocalDateTime().toLocalDate(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(6)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(7)).toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
+                        "",
+                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
+                return appointment;
+            }
+            else {
+                statement.close();
+                return null;
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ObservableList<LocalDateTime> getAllStartTimesByDate(LocalDate localDate){
+        allStartTimes.clear();
+        try {
+            statement = JDBCConnectionHelper.getStatement();
+            String sql = "SELECT Start FROM client_schedule.appointments WHERE dayofmonth(start) = dayofmonth(" + localDate + ");";
+            ResultSet resultSet = statement.executeQuery(sql);
+            while(resultSet.next()){
+                allStartTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        startAvailableTimes = TimeHelper.getAvailableTimes(allStartTimes);
+        return startAvailableTimes;
+
+    }
+    public static ObservableList<LocalDateTime> getAllEndTimesByDate(LocalDate localDate){
+        allEndTimes.clear();
+        try {
+            statement = JDBCConnectionHelper.getStatement();
+            String sql = "SELECT End FROM client_schedule.appointments WHERE dayofmonth(End) = dayofmonth(" + localDate + ");";
+            ResultSet resultSet = statement.executeQuery(sql);
+            while(resultSet.next()){
+                allEndTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        endAvailableTimes = TimeHelper.getAvailableTimes(allEndTimes);
+        return endAvailableTimes;
+    }
+    public static boolean validTimes(LocalDateTime possibleStart, LocalDateTime possibleEnd){
+        ZonedDateTime possibleStartZoned = possibleStart.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime possibleEndZoned = possibleEnd.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime appStart = possibleStartZoned.toLocalDateTime();
+        LocalDateTime appEnd = possibleEndZoned.toLocalDateTime();
+        valid = true;
+        try{
+            allStartTimes.clear();
+            allEndTimes.clear();
+            try {
+                statement = JDBCConnectionHelper.getStatement();
+                String sql = "SELECT Start FROM client_schedule.appointments WHERE dayofmonth(start) = dayofmonth('" + possibleStart + "');";
+                ResultSet resultSet = statement.executeQuery(sql);
+                while(resultSet.next()){
+                    allStartTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                statement = JDBCConnectionHelper.getStatement();
+                String sql = "SELECT End FROM client_schedule.appointments WHERE dayofmonth(End) = dayofmonth('" + possibleEnd + "');";
+                ResultSet resultSet = statement.executeQuery(sql);
+                while(resultSet.next()){
+                    allEndTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            statement.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        while(valid){
+            int index = 0;
+            while (index < allStartTimes.size() && index < allEndTimes.size()){
+                LocalDateTime localStartDateTime = allStartTimes.get(index);
+                LocalDateTime localEndDateTime = allEndTimes.get(index);
+
+                ZonedDateTime zonedDateTimeStart = localStartDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+                ZonedDateTime zonedDateTimeEnd = localEndDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+                LocalDateTime startTime = zonedDateTimeStart.toLocalDateTime();
+                LocalDateTime endTime = zonedDateTimeEnd.toLocalDateTime();
+
+                if(((appStart.isAfter(startTime) || appStart.isEqual(startTime))) && appEnd.isBefore(endTime)){
+                    return false;
+                }
+                if(appEnd.isAfter(startTime)&& ((appEnd.isBefore(endTime) || appEnd.isEqual(endTime)))){
+                    return false;
+                }
+                if(((appStart.isBefore(startTime)) || appStart.isEqual(startTime)) && ((appEnd.isAfter(endTime) || appEnd.isEqual(endTime)))){
+                    return false;
+                }else{
+                    index++;
+                }
+            }
+                return true;
+        }
+        return false;
+    }
+
 }

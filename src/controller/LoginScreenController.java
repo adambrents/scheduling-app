@@ -3,6 +3,8 @@ package controller;
 import database.Appointments;
 import database.Logins;
 import database.Times;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,6 +13,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.Appointment;
+import utilities.TimeHelper;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +23,7 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -33,8 +39,6 @@ public class LoginScreenController implements Initializable {
     public TextField usernameField;
     public TextField passwordField;
     public Button exit;
-    public boolean appointmentsWithin15Min;
-
     private Parent scene;
 
     /**
@@ -73,22 +77,12 @@ public class LoginScreenController implements Initializable {
                     controller.setUser(Logins.getUserId(usernameField.getText()));
                     stage.setScene(new Scene(scene));
                     stage.show();
-                    int index = 0;
-                    while (index < Appointments.getWeeklyAppointments().size()){
-                        Timestamp startTimestamp = Appointments.getWeeklyAppointments().get(index).getStart();
-                        LocalDateTime startDateTime = startTimestamp.toLocalDateTime();
-                        if(startDateTime.isAfter(LocalDateTime.now()) && startDateTime.isBefore(LocalDateTime.now().plusMinutes(15))){
-                            appointmentsWithin15Min = true;
-                            break;
-                        }
-                        else {
-                            index++;
-                        }
-                    }
 
+                    Appointment appt15Min = Appointments.get15MinAppt();
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    if(appointmentsWithin15Min){
-                        alert.setContentText("You have an Appointment within 15 minutes");
+                    if(appt15Min != null){
+                        alert.setContentText("You have the following appointment witin the next 15 minutes: \n\nAppointment ID: " + appt15Min.getAppointmentID()
+                                + "\nDate: " + appt15Min.getStartDate() + "\nTime: " + appt15Min.getStartTime());
                     }
                     else {
                         alert.setContentText("You have no Appointments within 15 minutes");
@@ -100,7 +94,7 @@ public class LoginScreenController implements Initializable {
                 alert.setTitle("Error");
                 alert.setHeaderText("Error");
                 alert.setContentText("Error: See console for more details");
-                System.out.println(e.getMessage());
+                e.printStackTrace();
                 //Lambda expression to handle user response. Reloads login page on OK
                 alert.showAndWait().ifPresent((response -> {
                     if (response == ButtonType.OK) {

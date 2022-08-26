@@ -3,6 +3,7 @@ package model;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 public class Appointment {
     private int appointmentID;
@@ -19,6 +20,7 @@ public class Appointment {
     private LocalTime startTime;
     private LocalTime endTime;
     private String division;
+    private String contactName;
 
     /**
      * @param appointmentID
@@ -36,7 +38,7 @@ public class Appointment {
      * @param endTime
      * @param division
      */
-    public Appointment(int appointmentID, String title, String description, String location, String type, Timestamp start, Timestamp end, int customerID, int userID, int contactID, LocalDate startDate, LocalTime startTime, LocalTime endTime, String division) {
+    public Appointment(int appointmentID, String title, String description, String location, String type, Timestamp start, Timestamp end, int customerID, int userID, int contactID, LocalDate startDate, LocalTime startTime, LocalTime endTime, String division, String contactName) {
         this.appointmentID = appointmentID;
         this.title = title;
         this.description = description;
@@ -51,6 +53,7 @@ public class Appointment {
         this.startTime = startTime;
         this.endTime = endTime;
         this.division = division;
+        this.contactName = contactName;
     }
 
     /**
@@ -247,5 +250,13 @@ public class Appointment {
      */
     public void setDivision(String division) {
         this.division = division;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
     }
 }

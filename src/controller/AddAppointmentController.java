@@ -3,6 +3,7 @@ package controller;
 import database.Appointments;
 import database.Contacts;
 import database.Customers;
+import database.Times;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
@@ -50,9 +52,102 @@ public class AddAppointmentController implements Initializable {
     private static int userId;
     boolean error;
     String label;
+    private int apptSaveIssue;
     private ObservableList<String> customerNames = FXCollections.observableArrayList();
+    private ObservableList<LocalDateTime> startDateTimes = FXCollections.observableArrayList();
+    private ObservableList<LocalDateTime> endDateTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
+    @FXML
+    void onDate(ActionEvent event) throws IOException{
+
+        if(date.getValue() == null){
+
+        }
+        else{
+
+            int index = 0;
+            startTimes.clear();
+            while (index < Appointments.getAllStartTimesByDate(date.getValue()).size() && index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
+                LocalDateTime localStartDateTime = Appointments.getAllStartTimesByDate(date.getValue()).get(index);
+                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
+
+                if(Appointments.validTimes(localStartDateTime, localEndDateTime)){
+                    LocalTime localStartTime = localStartDateTime.toLocalTime();
+                    startTimes.add(localStartTime);
+                }
+                index++;
+            }
+            if(startTimes.isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("There are no appointments on the date selected");
+                    alert.showAndWait();
+                    return;
+            }
+
+            startTime.setItems(startTimes);
+        }
+    }
+    @FXML
+    void onMouseClickEnd(InputEvent event) throws IOException{
+        if(date.getValue() == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error");
+            alert.setContentText("You must enter a date to see end times");
+            alert.showAndWait();
+            return;
+        }
+        else if(startTime.getValue() == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error");
+            alert.setContentText("You must enter a start time to see end times");
+            alert.showAndWait();
+            return;
+        }
+        else{
+
+            int index = 0;
+            endTimes.clear();
+            while (index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
+                LocalDateTime localStartDateTime = LocalDateTime.of(date.getValue(),(LocalTime) startTime.getValue());
+                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
+
+                if(!Appointments.validTimes(localStartDateTime, localEndDateTime)){
+
+                }
+                else if ((localStartDateTime.isAfter(Appointments.getAllEndTimesByDate(date.getValue()).get(index))
+                        ||localStartDateTime.isEqual(Appointments.getAllEndTimesByDate(date.getValue()).get(index)))
+                        && Appointments.validTimes(localStartDateTime, localEndDateTime)){
+
+                }
+                else {
+                    LocalTime localEndTime = localEndDateTime.toLocalTime();
+                    endTimes.add(localEndTime);
+                }
+                index++;
+            }
+        }
+    }
+    @FXML
+    void onMouseClickStart(InputEvent event) throws IOException{
+        if(date.getValue() == null){
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error");
+            alert.setContentText("You must enter a date to see start times");
+            alert.showAndWait();
+            return;
+
+        }
+        else{
+
+        }
+    }
 
     /**
      * @param userId
@@ -80,52 +175,13 @@ public class AddAppointmentController implements Initializable {
      * @param actionEvent
      */
     public void onAdd(ActionEvent actionEvent) {
-        isApptValid = true;
-        errorText.setText("");
-        LocalDate dateSelected = date.getValue();
-        LocalTime startTimeSelected = (LocalTime) startTime.getValue();
-        LocalTime endTimeSelected = (LocalTime) endTime.getValue();
-
-        LocalDateTime startDateTime = LocalDateTime.of(dateSelected,startTimeSelected);
-        LocalDateTime endDateTime = LocalDateTime.of(dateSelected,endTimeSelected);
-
-        ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedStartDateTimeEST = zonedStartDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedEndDateTimeEST = zonedEndDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime ZonedESTNOW = ZonedDateTime.now(ZoneId.of("America/New_York"));
-
-        while (isApptValid){
-            if(zonedStartDateTimeEST.isBefore(ZonedESTNOW)){
-                errorText.setText("The start date/time is set before the current time");
-                isApptValid = false;
-            }
-            if(zonedEndDateTimeEST.toLocalTime().isAfter(LocalTime.of(22, 0))){
-                errorText.setText("The end time is set after the closing time");
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.toLocalTime().isBefore(LocalTime.of(8,0))){
-                errorText.setText("The selected start time is before business hours");
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.isAfter(zonedEndDateTimeEST)){
-                errorText.setText("The start time is set after the end Time");
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.isEqual(zonedEndDateTimeEST)){
-                errorText.setText("You cannot have an equal start and end time");
-                isApptValid = false;
-            }
-            break;
-        }
-        error = false;
-        if (customer.getValue() == null || contact.getValue() == null || startTime.getValue() == null || endTime.getValue() == null) {
+        if((title.getText() == null) || (description.getText() == null) || (type.getText() == null) || (date.getValue() == null)
+                || (startTime.getValue() == null) ||  (endTime.getValue() == null) || (location.getText() == null) || (customer.getValue() == null)
+        ||(contact.getValue() == null)){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Combo Box Error");
-            alert.setContentText("All combo boxes MUST have something selected");
+            alert.setHeaderText("Error");
+            alert.setContentText("You must provide a value for every field");
             alert.showAndWait();
             return;
         }
@@ -141,7 +197,7 @@ public class AddAppointmentController implements Initializable {
             error = true;
             label = "Title";
         }
-        if(description.getText().length() <1){
+        if(description.getText().length() < 1){
             error = true;
             label = "Description";
         }
@@ -149,7 +205,7 @@ public class AddAppointmentController implements Initializable {
             error = true;
             label = "Type";
         }
-        if(location.getText().length() <1){
+        if(location.getText().length() < 1){
             error = true;
             label = "Location";
         }
@@ -161,15 +217,72 @@ public class AddAppointmentController implements Initializable {
             alert.showAndWait();
             return;
         }
+        error = false;
+        isApptValid = true;
+        errorText.setText("");
+
+        LocalDateTime startDateTime = LocalDateTime.of(date.getValue(),(LocalTime) startTime.getValue());
+        LocalDateTime endDateTime = LocalDateTime.of(date.getValue(),(LocalTime) endTime.getValue());
+
+        ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
+        ZonedDateTime zonedStartDateTimeEST = zonedStartDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
+
+        ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
+        ZonedDateTime zonedEndDateTimeEST = zonedEndDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
+
+        ZonedDateTime ZonedESTNOW = ZonedDateTime.now(ZoneId.of("America/New_York"));
+
+        while (isApptValid){
+            if(zonedEndDateTimeEST.toLocalTime().isAfter(LocalTime.of(22, 0))){
+                apptSaveIssue = 1;
+                errorText.setText(Times.errorText(apptSaveIssue));
+                isApptValid = false;
+            }
+            if(zonedStartDateTime.toLocalTime().isBefore(LocalTime.of(8,0))){
+                apptSaveIssue = 2;
+                errorText.setText(Times.errorText(apptSaveIssue));
+                isApptValid = false;
+            }
+            if(zonedStartDateTimeEST.isBefore(ZonedESTNOW)){
+                apptSaveIssue = 5;
+                errorText.setText(Times.errorText(apptSaveIssue));
+                isApptValid = false;
+            }
+            if(zonedStartDateTimeEST.isAfter(zonedEndDateTimeEST)){
+                apptSaveIssue = 3;
+                errorText.setText(Times.errorText(apptSaveIssue));
+                isApptValid = false;
+            }
+            if(zonedStartDateTimeEST.isEqual(zonedEndDateTimeEST)){
+                apptSaveIssue = 4;
+                errorText.setText(Times.errorText(apptSaveIssue));
+                isApptValid = false;
+            }
+            break;
+        }
         if (isApptValid){
-            LocalDateTime localDateTime = zonedStartDateTimeEST.toLocalDateTime();
-            LocalDateTime localDateTime1 = zonedEndDateTimeEST.toLocalDateTime();
+//            LocalDateTime localDateTime = zonedStartDateTimeEST.toLocalDateTime();
+//            LocalDateTime localDateTime1 = zonedEndDateTimeEST.toLocalDateTime();
 
-            Timestamp start = Timestamp.valueOf(localDateTime);
-            Timestamp end = Timestamp.valueOf(localDateTime1);
+            Timestamp start = Timestamp.valueOf(zonedStartDateTime.toLocalDateTime());
+            Timestamp end = Timestamp.valueOf(zonedEndDateTime.toLocalDateTime());
 
-            Appointment appointment = new Appointment(Appointments.getId(),title.getText(),description.getText(),location.getText(),type.getText(),start,end,Customers.getCustomerId(customer.getValue().toString()),userId,
-                    Contacts.getContactID(contact.getValue().toString()),date.getValue(),localDateTime.toLocalTime(),localDateTime1.toLocalTime(), Appointments.getDivisionsAppointments(Appointments.getId()));
+            Appointment appointment = new Appointment(
+                    Appointments.getId(),
+                    title.getText(),
+                    description.getText(),
+                    location.getText(),
+                    type.getText(),
+                    start,
+                    end,
+                    Customers.getCustomerId(customer.getValue().toString()),
+                    userId,
+                    Contacts.getContactID(contact.getValue().toString()),
+                    date.getValue(),
+                    zonedStartDateTime.toLocalTime(),
+                    zonedEndDateTime.toLocalTime(),
+                    Appointments.getDivisionsAppointments(Appointments.getId()),
+                    contact.getValue().toString());
             if (Appointments.addAppointment(appointment)){
                 errorText.setText("Successfully added appointment :)");
                 title.clear();
@@ -205,22 +318,7 @@ public class AddAppointmentController implements Initializable {
             customerNames.add(i,customerName);
             i++;
         }
-        int index = 0;
-        startTimes.clear();
-        while (index < TimeHelper.getAvailableTimes().size()){
-            LocalDateTime localDateTime = TimeHelper.getAvailableTimes().get(index);
-            LocalTime localTime = localDateTime.toLocalTime();
-            startTimes.add(localTime);
-            index++;
-        }
-        int index2 = 0;
-        endTimes.clear();
-        while (index2 < TimeHelper.getEndAvailableTimes().size()){
-            LocalDateTime localDateTime = TimeHelper.getEndAvailableTimes().get(index2);
-            LocalTime localTime = localDateTime.toLocalTime();
-            endTimes.add(localTime);
-            index2++;
-        }
+
         customer.setItems(customerNames);
         contact.setItems(Contacts.getAllContacts());
         startTime.setItems(startTimes);

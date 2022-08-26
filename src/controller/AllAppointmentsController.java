@@ -7,15 +7,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Appointment;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AllAppointmentsController implements Initializable {
@@ -77,9 +76,19 @@ public class AllAppointmentsController implements Initializable {
     @FXML
     void onDelete(ActionEvent event) {
         selectedAppointment = ((Appointment) Table.getSelectionModel().getSelectedItem());
-        if(selectedAppointment != null){
+        if (selectedAppointment == null) {
+            return;
+        }
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
+        alert1.setHeaderText("Delete");
+        alert1.setContentText("Are you sure you want to delete Appointment_ID: " + selectedAppointment.getAppointmentID() + ", Type: " + selectedAppointment.getType() + "?");
+        Optional<ButtonType> result = alert1.showAndWait();
+        if (result.get() == ButtonType.OK) {
             Appointments.deleteAppointment(selectedAppointment);
-            Table.setItems(Appointments.getAllAppointments());
+            Table.setItems(Appointments.getWeeklyAppointments());
+        }
+        else {
+            alert1.close();
         }
 
     }

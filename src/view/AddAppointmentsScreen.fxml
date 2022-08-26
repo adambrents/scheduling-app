@@ -41,7 +41,7 @@
                 <Label text="Type" GridPane.rowIndex="3" />
                 <TextField fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <Label text="Date" GridPane.rowIndex="4" />
-                <DatePicker fx:id="date" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <DatePicker fx:id="date" onAction="#onDate" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <Label text="Start Time" GridPane.rowIndex="5" />
                 <Label text="End Time" GridPane.rowIndex="6" />
                 <Label text="Location" GridPane.rowIndex="7" />
@@ -58,8 +58,8 @@
                         <Insets left="10.0" />
                     </GridPane.margin>
                 </Label>
-                <ComboBox fx:id="startTime" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <ComboBox fx:id="endTime" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <ComboBox fx:id="startTime" onMouseClicked="#onMouseClickStart" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <ComboBox fx:id="endTime" onMouseClicked="#onMouseClickEnd" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
               <Button mnemonicParsing="false" onAction="#onAdd" text="Add" GridPane.columnIndex="2" GridPane.rowIndex="8" />
               <Button mnemonicParsing="false" onAction="#onCancel" text="Cancel" GridPane.columnIndex="3" GridPane.rowIndex="8" />
             </children>
