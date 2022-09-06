@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.time.*;
+import java.time.temporal.TemporalAccessor;
 import java.util.ResourceBundle;
 
 public class AddAppointmentController implements Initializable {
@@ -64,29 +65,29 @@ public class AddAppointmentController implements Initializable {
      */
     @FXML
     void onDate(ActionEvent event) throws IOException{
-
+        startTime.setItems(null);
+        endTime.setItems(null);
+        startTime.setValue(null);
+        endTime.setValue(null);
+        startTimes.clear();
+        endTimes.clear();
         if(date.getValue() == null){
 
         }
         else{
+            ObservableList<LocalDateTime> startDateTimes = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue()));
 
-            int index = 0;
-            startTimes.clear();
-            while (index < Appointments.getAllStartTimesByDate(date.getValue()).size() && index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
-                LocalDateTime localStartDateTime = Appointments.getAllStartTimesByDate(date.getValue()).get(index);
-                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
-
-                if(Appointments.validTimes(localStartDateTime, localEndDateTime)){
-                    LocalTime localStartTime = localStartDateTime.toLocalTime();
-                    startTimes.add(localStartTime);
-                }
-                index++;
+            int i = 0;
+            while (i < startDateTimes.size()){
+                startTimes.add(startDateTimes.get(i).toLocalTime());
+                ++i;
             }
+
             if(startTimes.isEmpty()){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText("Error");
-                    alert.setContentText("There are no appointments on the date selected");
+                    alert.setContentText("There are no appointments available on the date selected");
                     alert.showAndWait();
                     return;
             }
@@ -104,6 +105,8 @@ public class AddAppointmentController implements Initializable {
      */
     @FXML
     void onMouseClickEnd(InputEvent event) throws IOException{
+        endTimes.clear();
+        endTime.setItems(null);
         if(date.getValue() == null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -122,26 +125,14 @@ public class AddAppointmentController implements Initializable {
         }
         else{
 
-            int index = 0;
-            endTimes.clear();
-            while (index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
-                LocalDateTime localStartDateTime = LocalDateTime.of(date.getValue(),(LocalTime) startTime.getValue());
-                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
+            ObservableList<LocalDateTime> endDateTimes = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()), LocalTime.parse(startTime.getValue().toString()));
 
-                if(!Appointments.validTimes(localStartDateTime, localEndDateTime)){
-
-                }
-                else if ((localStartDateTime.isAfter(Appointments.getAllEndTimesByDate(date.getValue()).get(index))
-                        ||localStartDateTime.isEqual(Appointments.getAllEndTimesByDate(date.getValue()).get(index)))
-                        && Appointments.validTimes(localStartDateTime, localEndDateTime)){
-
-                }
-                else {
-                    LocalTime localEndTime = localEndDateTime.toLocalTime();
-                    endTimes.add(localEndTime);
-                }
-                index++;
+            int i = 0;
+            while (i < endDateTimes.size()){
+                endTimes.add(endDateTimes.get(i).toLocalTime());
+                ++i;
             }
+            endTime.setItems(endTimes);
         }
     }
 
@@ -152,6 +143,7 @@ public class AddAppointmentController implements Initializable {
      */
     @FXML
     void onMouseClickStart(InputEvent event) throws IOException{
+        endTime.setValue(null);
         if(date.getValue() == null){
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -196,6 +188,8 @@ public class AddAppointmentController implements Initializable {
      * @param actionEvent
      */
     public void onAdd(ActionEvent actionEvent) {
+        error = false;
+        label = "";
         if((title.getText() == null) || (description.getText() == null) || (type.getText() == null) || (date.getValue() == null)
                 || (startTime.getValue() == null) ||  (endTime.getValue() == null) || (location.getText() == null) || (customer.getValue() == null)
         ||(contact.getValue() == null)){

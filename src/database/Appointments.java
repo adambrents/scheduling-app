@@ -35,25 +35,28 @@ public class Appointments {
 
     private static ObservableList<LocalDateTime> startAvailableTimes = FXCollections.observableArrayList();
     private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
+    private static ObservableList<LocalDateTime> validStartTimes = FXCollections.observableArrayList();
+    private static ObservableList<LocalDateTime> validEndTimes = FXCollections.observableArrayList();
 
     /**
      * query returns a list of all appointments in database
+     *
      * @return
      */
-    public static ObservableList<Appointment> getAllAppointments(){
+    public static ObservableList<Appointment> getAllAppointments() {
 
-        try{
+        try {
             allAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division "
-                         + "FROM client_schedule.appointments AS a "
-                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE a.Title IS NOT NULL; ";
+                    + "FROM client_schedule.appointments AS a "
+                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                    + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),
-                resultSet.getString(2),
+                        resultSet.getString(2),
                         resultSet.getString(3),
                         resultSet.getString(4),
                         resultSet.getString(5),
@@ -71,7 +74,7 @@ public class Appointments {
             }
             statement.close();
             return allAppointments;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
@@ -79,10 +82,11 @@ public class Appointments {
 
     /**
      * query adds input appointments to the database
+     *
      * @param appointment
      * @return
      */
-    public static boolean addAppointment(Appointment appointment){
+    public static boolean addAppointment(Appointment appointment) {
         LocalDateTime possibleStart = appointment.getStart().toLocalDateTime();
         LocalDateTime possibleEnd = appointment.getEnd().toLocalDateTime();
         ZonedDateTime possibleStartZoned = possibleStart.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
@@ -90,12 +94,12 @@ public class Appointments {
         LocalDateTime appStart = possibleStartZoned.toLocalDateTime();
         LocalDateTime appEnd = possibleEndZoned.toLocalDateTime();
         valid = true;
-        try{
+        try {
             customerAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT * FROM client_schedule.appointments WHERE customer_ID=" + appointment.getCustomerID() + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment customerAppointment = new Appointment(
                         resultSet.getInt(1),
                         resultSet.getString(2),
@@ -115,12 +119,12 @@ public class Appointments {
                 customerAppointments.add(customerAppointment);
             }
             statement.close();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        while(valid){
+        while (valid) {
             int index = 0;
-            while (index < customerAppointments.size()){
+            while (index < customerAppointments.size()) {
                 Appointment aptmt = customerAppointments.get(index);
 
                 ZonedDateTime zonedDateTimeStart = aptmt.getStart().toLocalDateTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
@@ -128,19 +132,19 @@ public class Appointments {
                 LocalDateTime startTime = zonedDateTimeStart.toLocalDateTime();
                 LocalDateTime endTime = zonedDateTimeEnd.toLocalDateTime();
 
-                if(((appStart.isAfter(startTime) || appStart.isEqual(startTime))) && appEnd.isBefore(endTime)){
+                if (((appStart.isAfter(startTime) || appStart.isEqual(startTime))) && appEnd.isBefore(endTime)) {
                     return false;
                 }
-                if(appEnd.isAfter(startTime)&& ((appEnd.isBefore(endTime) || appEnd.isEqual(endTime)))){
+                if (appEnd.isAfter(startTime) && ((appEnd.isBefore(endTime) || appEnd.isEqual(endTime)))) {
                     return false;
                 }
-                if(((appStart.isBefore(startTime)) || appStart.isEqual(startTime)) && ((appEnd.isAfter(endTime) || appEnd.isEqual(endTime)))){
+                if (((appStart.isBefore(startTime)) || appStart.isEqual(startTime)) && ((appEnd.isAfter(endTime) || appEnd.isEqual(endTime)))) {
                     return false;
-                }else{
+                } else {
                     index++;
                 }
             }
-            try{
+            try {
                 PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(
                         "INSERT INTO appointments VALUES(" +
                                 appointment.getAppointmentID() + ", '" +
@@ -169,7 +173,7 @@ public class Appointments {
      * @param appointment
      * @return
      */
-    public static boolean modifyAppointment(Appointment appointment){
+    public static boolean modifyAppointment(Appointment appointment) {
         LocalDateTime possibleStart = appointment.getStart().toLocalDateTime();
         LocalDateTime possibleEnd = appointment.getEnd().toLocalDateTime();
         ZonedDateTime possibleStartZoned = possibleStart.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
@@ -177,12 +181,12 @@ public class Appointments {
         LocalDateTime testAppStart = possibleStartZoned.toLocalDateTime();
         LocalDateTime testAppEnd = possibleEndZoned.toLocalDateTime();
         valid = true;
-        try{
+        try {
             customerAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT * FROM client_schedule.appointments WHERE customer_ID=" + appointment.getCustomerID() + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 conflict = false;
                 Appointment customerAppointment = new Appointment(resultSet.getInt(1),
                         resultSet.getString(2),
@@ -199,11 +203,10 @@ public class Appointments {
                         resultSet.getTimestamp(7).toLocalDateTime().toLocalTime(),
                         division,
                         Contacts.getContactName(resultSet.getInt("Customer_ID")));
-                if(customerAppointment.getAppointmentID() == appointment.getAppointmentID()){
+                if (customerAppointment.getAppointmentID() == appointment.getAppointmentID()) {
                     //does nothing with the appointment if it has the same id
                     conflict = true;
-                }
-                else if(!conflict){
+                } else if (!conflict) {
                     customerAppointments.add(customerAppointment);
                 }
             }
@@ -211,31 +214,8 @@ public class Appointments {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        while (valid){
-            int index = 0;
-            while (index < customerAppointments.size()){
-                Appointment app = customerAppointments.get(index);
-
-                ZonedDateTime zonedDateTimeStart = app.getStart().toLocalDateTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                ZonedDateTime zonedDateTimeEnd = app.getEnd().toLocalDateTime().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                LocalDateTime startTime = zonedDateTimeStart.toLocalDateTime();
-                LocalDateTime endTime = zonedDateTimeEnd.toLocalDateTime();
-
-                if(((testAppStart.isAfter(startTime) || testAppStart.isEqual(startTime))) && testAppStart.isBefore(endTime)){
-                    return false;
-                }
-                if(testAppEnd.isAfter(startTime) && ((testAppEnd.isBefore(endTime) || testAppEnd.isEqual(endTime)))){
-                    return false;
-                }
-                if(((testAppStart.isBefore(startTime)) || testAppStart.isEqual(startTime)) && ((testAppEnd.isAfter(endTime) || testAppEnd.isEqual(endTime)))){
-                    return false;
-                }
-                else{
-                    index++;
-                }
-            }
-            try{
-                PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title= '" + appointment.getTitle() + "" +
+            try {
+                PreparedStatement statement = JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title= '" + appointment.getTitle() + "" +
                         "', Description='" + appointment.getDescription() + "', Location='" + appointment.getLocation() + "', Type='" + appointment.getType() + "', Start='" + testAppStart + "', END='" +
                         testAppEnd + "', Create_Date=NOW(), Created_By='User', Last_Update=NOW(),  Last_Updated_By='USER', Customer_ID=" + appointment.getCustomerID() + ", User_ID=" + appointment.getUserID()
                         + ", Contact_ID=" + appointment.getContactID() + " WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
@@ -244,9 +224,8 @@ public class Appointments {
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
-        }
-        return false;
     }
 
     /**
@@ -277,12 +256,14 @@ public class Appointments {
 
     /**
      * soft deletes an appointment from the db - sets all values to NULL except a few
+     *
      * @param appointment
      * @return
      */
-    public static boolean deleteAppointment(Appointment appointment){
-        try{PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
-                " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
+    public static boolean deleteAppointment(Appointment appointment) {
+        try {
+            PreparedStatement statement = JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
+                    " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -293,12 +274,13 @@ public class Appointments {
 
     /**
      * soft deletes all appointments related to a given customer
+     *
      * @param customerId
      */
-    public static void deleteAppointment(int customerId){
-        try{
-            PreparedStatement statement =JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
-                " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Customer_ID=" + customerId + " AND Title IS NOT NULL;");
+    public static void deleteAppointment(int customerId) {
+        try {
+            PreparedStatement statement = JDBC.getConnection().prepareStatement("UPDATE client_schedule.appointments SET Title=NULL, Description=NULL, Location=NULL, Type=NULL, Start=NULL, End=NULL," +
+                    " Create_Date=NULL, Created_By=NULL, Last_Update=NULL,  Last_Updated_By=NULL, Customer_ID=1, User_ID=1, Contact_ID=1 WHERE Customer_ID=" + customerId + " AND Title IS NOT NULL;");
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -311,17 +293,17 @@ public class Appointments {
      *
      * @return
      */
-    public static ObservableList<Appointment> getWeeklyAppointments(){
-        try{
+    public static ObservableList<Appointment> getWeeklyAppointments() {
+        try {
             weeklyAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division "
-                         + "FROM client_schedule.appointments AS a "
-                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE a.Title IS NOT NULL; ";
+                    + "FROM client_schedule.appointments AS a "
+                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                    + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment appointment = new Appointment(
                         resultSet.getInt("Appointment_ID"),
                         resultSet.getString("Title"),
@@ -342,10 +324,9 @@ public class Appointments {
                 LocalDateTime nowTime = LocalDateTime.now();
                 ZonedDateTime nowTimeEST = nowTime.atZone(ZoneId.of("America/New_York"));
                 LocalDateTime est = nowTimeEST.toLocalDateTime();
-                if(localDateTime.isBefore(est.plusDays(7)) && localDateTime.isAfter(est)){
+                if (localDateTime.isBefore(est.plusDays(7)) && localDateTime.isAfter(est)) {
                     weeklyAppointments.add(appointment);
-                }
-                else {
+                } else {
                     //does nothing with the appointment if it is past 7 days out
                 }
             }
@@ -359,19 +340,20 @@ public class Appointments {
 
     /**
      * gets all appointments in the upcoming month
+     *
      * @return
      */
-    public static ObservableList<Appointment> getMonthlyAppointments(){
-        try{
+    public static ObservableList<Appointment> getMonthlyAppointments() {
+        try {
             monthlyAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division "
-                         + "FROM client_schedule.appointments AS a "
-                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE a.Title IS NOT NULL; ";
+                    + "FROM client_schedule.appointments AS a "
+                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                    + "WHERE a.Title IS NOT NULL; ";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment appointment = new Appointment(
                         resultSet.getInt("Appointment_ID"),
                         resultSet.getString("Title"),
@@ -393,17 +375,9 @@ public class Appointments {
                 ZonedDateTime nowTimeEST = nowTime.atZone(ZoneId.of("America/New_York"));
                 LocalDateTime est = nowTimeEST.toLocalDateTime();
 
-//                LocalDateTime startDateTime = appointment.getStart().toLocalDateTime();
-//                LocalDateTime endDateTime = appointment.getEnd().toLocalDateTime();
-//                ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
-//                ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
-//
-//                appointment.setStartTime(zonedStartDateTime.withFixedOffsetZone().toLocalTime());
-//                appointment.setEndTime(zonedEndDateTime.withFixedOffsetZone().toLocalTime());
-                if(localDateTime.isBefore(est.plusDays(30)) && localDateTime.isAfter(est)){
+                if (localDateTime.isBefore(est.plusDays(30)) && localDateTime.isAfter(est)) {
                     monthlyAppointments.add(appointment);
-                }
-                else {
+                } else {
                     //does nothing with the appointment if it is past 30 days out
                 }
             }
@@ -444,19 +418,18 @@ public class Appointments {
      * @param type
      * @return
      */
-    public static int getMonthTypeNumber(LocalDateTime localDateTime, String type){
+    public static int getMonthTypeNumber(LocalDateTime localDateTime, String type) {
         int returnNumber = 0;
-        try{
+        try {
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT * FROM client_schedule.appointments WHERE Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 LocalDateTime YearAndMonth = resultSet.getTimestamp("Start").toLocalDateTime();
                 String appointmentType = resultSet.getString("Type");
-                if((localDateTime.getYear() == YearAndMonth.getYear()) && (localDateTime.getMonth() == YearAndMonth.getMonth()) && (type.equals(appointmentType))){
+                if ((localDateTime.getYear() == YearAndMonth.getYear()) && (localDateTime.getMonth() == YearAndMonth.getMonth()) && (type.equals(appointmentType))) {
                     returnNumber++;
-                }
-                else {
+                } else {
                     // do nothing if the types are not the same
                 }
             }
@@ -473,19 +446,19 @@ public class Appointments {
      * @param contact
      * @return
      */
-    public static ObservableList<Appointment> getContactAppointments(String contact){
+    public static ObservableList<Appointment> getContactAppointments(String contact) {
         contactID = Contacts.getContactID(contact);
-        try{
+        try {
             contactAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division AS Division "
-                         + "FROM client_schedule.appointments AS a "
-                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE Contact_ID=" + contactID
-                         + " AND Title IS NOT NULL;";
+                    + "FROM client_schedule.appointments AS a "
+                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                    + "WHERE Contact_ID=" + contactID
+                    + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
@@ -517,20 +490,19 @@ public class Appointments {
      * @param selectedCustomer
      * @return
      */
-    public static boolean checkForAppointments(Customer selectedCustomer){
+    public static boolean checkForAppointments(Customer selectedCustomer) {
         int customerID = selectedCustomer.getId();
         customerAppointmentExists.clear();
-        try{
+        try {
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT * FROM client_schedule.appointments WHERE Customer_ID=" + customerID + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 customerAppointmentExists.add(resultSet.getString(2));
             }
-            if(customerAppointmentExists.isEmpty()){
+            if (customerAppointmentExists.isEmpty()) {
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
 
@@ -550,7 +522,7 @@ public class Appointments {
     public static ObservableList<Appointment> getDivisionAppointmentsList(String selectedDivision, String contact) {
         contactID = Contacts.getContactID(contact);
 
-        try{
+        try {
             appointmentsInDivision.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division AS Division "
@@ -561,7 +533,7 @@ public class Appointments {
                     + " AND Title IS NOT NULL"
                     + " AND Division = '" + selectedDivision + "' ;";
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
@@ -593,22 +565,23 @@ public class Appointments {
      * @param appointmentId
      * @return
      */
-    public static String getDivisionsAppointments(int appointmentId){
+    public static String getDivisionsAppointments(int appointmentId) {
         try {
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT fld.Division "
-                         + "FROM client_schedule.appointments AS a "
-                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                         + "WHERE a.Appointment_ID = " + appointmentId
-                         + " AND a.Title IS NOT NULL; ";;
+                    + "FROM client_schedule.appointments AS a "
+                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                    + "WHERE a.Appointment_ID = " + appointmentId
+                    + " AND a.Title IS NOT NULL; ";
+            ;
             ResultSet resultSet = statement.executeQuery(query);
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 divisionAppointment = resultSet.getString(1);
             }
             return divisionAppointment;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
@@ -620,16 +593,16 @@ public class Appointments {
      *
      * @return
      */
-    public static Appointment get15MinAppt(){
+    public static Appointment get15MinAppt() {
 
-        try{
+        try {
             String sql = "SELECT * FROM client_schedule.appointments AS a WHERE Start>UTC_TIMESTAMP AND minute(Start)<minute(Start)+minute(15) ORDER BY Start ASC LIMIT 1; ";
             preparedStatement = JDBC.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (preparedStatement.getResultSet() == null){
+            if (preparedStatement.getResultSet() == null) {
                 return null;
             }
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
@@ -646,130 +619,133 @@ public class Appointments {
                         "",
                         Contacts.getContactName(resultSet.getInt("Customer_ID")));
                 return appointment;
-            }
-            else {
+            } else {
                 statement.close();
                 return null;
             }
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * gets all taken start times on a given day of the month
-     *
+     * gets all taken start times from the db by date and converts those times from UTC to times on the user's system
      * @param localDate
      * @return
      */
-    public static ObservableList<LocalDateTime> getAllStartTimesByDate(LocalDate localDate){
+    public static ObservableList<LocalTime> getAllTakenStartTimesByDate(LocalDate localDate) {
+        ObservableList<LocalTime> allTakenStartTimes = FXCollections.observableArrayList();
         allStartTimes.clear();
         try {
             statement = JDBCConnectionHelper.getStatement();
-            String sql = "SELECT Start FROM client_schedule.appointments WHERE dayofmonth(start) = dayofmonth(" + localDate + ");";
+            String sql = "SELECT Start FROM client_schedule.appointments WHERE dayofmonth(start) = dayofmonth('" + localDate + "');";
             ResultSet resultSet = statement.executeQuery(sql);
-            while(resultSet.next()){
-                allStartTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            while (resultSet.next()) {
+                allTakenStartTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().toLocalTime());
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        startAvailableTimes = TimeHelper.getAvailableTimes(allStartTimes);
-        return startAvailableTimes;
+        return allTakenStartTimes;
 
     }
 
     /**
-     * gets all taken end times on a given day of the month
+     * gets all taken end times from the db based on an input date and converts those times from UTC to times on the user's system
+     *
      * @param localDate
      * @return
      */
-    public static ObservableList<LocalDateTime> getAllEndTimesByDate(LocalDate localDate){
-        allEndTimes.clear();
+    public static ObservableList<LocalTime> getAllTakenEndTimesByDate(LocalDate localDate) {
+        ObservableList<LocalTime> allTakenEndTimes = FXCollections.observableArrayList();
         try {
             statement = JDBCConnectionHelper.getStatement();
-            String sql = "SELECT End FROM client_schedule.appointments WHERE dayofmonth(End) = dayofmonth(" + localDate + ");";
+            String sql = "SELECT End FROM client_schedule.appointments WHERE dayofmonth(End) = dayofmonth('" + localDate + "');";
             ResultSet resultSet = statement.executeQuery(sql);
-            while(resultSet.next()){
-                allEndTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            while (resultSet.next()) {
+                allTakenEndTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().toLocalTime());
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        endAvailableTimes = TimeHelper.getAvailableTimes(allEndTimes);
-        return endAvailableTimes;
+        return allTakenEndTimes;
     }
 
-    /**
-     * provides a boolean of if a given pair of start and end times are valid
-     *
-     * @param possibleStart
-     * @param possibleEnd
-     * @return
-     */
-    public static boolean validTimes(LocalDateTime possibleStart, LocalDateTime possibleEnd){
-        ZonedDateTime possibleStartZoned = possibleStart.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-        ZonedDateTime possibleEndZoned = possibleEnd.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-        LocalDateTime appStart = possibleStartZoned.toLocalDateTime();
-        LocalDateTime appEnd = possibleEndZoned.toLocalDateTime();
-        valid = true;
-        try{
-            allStartTimes.clear();
-            allEndTimes.clear();
-            try {
-                statement = JDBCConnectionHelper.getStatement();
-                String sql = "SELECT Start FROM client_schedule.appointments WHERE dayofmonth(start) = dayofmonth('" + possibleStart + "');";
-                ResultSet resultSet = statement.executeQuery(sql);
-                while(resultSet.next()){
-                    allStartTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                statement = JDBCConnectionHelper.getStatement();
-                String sql = "SELECT End FROM client_schedule.appointments WHERE dayofmonth(End) = dayofmonth('" + possibleEnd + "');";
-                ResultSet resultSet = statement.executeQuery(sql);
-                while(resultSet.next()){
-                    allEndTimes.add(TimeHelper.UTCtoLocalDate(resultSet.getTimestamp(1)).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            statement.close();
-        }catch (SQLException e){
-            e.printStackTrace();
+    public static ObservableList<LocalDateTime> getAllValidStartTimes(LocalDate userPickedDate) {
+        validStartTimes.clear();
+        ObservableList<LocalDateTime> possibleApptTimes = TimeHelper.getAvailableTimes(userPickedDate);
+        validStartTimes = possibleApptTimes;
+        ObservableList<LocalTime> allTakenStartTimes = getAllTakenStartTimesByDate(userPickedDate);
+        ObservableList<LocalTime> allTakenEndTimes = getAllTakenEndTimesByDate(userPickedDate);
+        if(allTakenEndTimes.isEmpty() || allTakenEndTimes.isEmpty()){
+            return validStartTimes;
         }
-        while(valid){
-            int index = 0;
-            while (index < allStartTimes.size() && index < allEndTimes.size()){
-                LocalDateTime localStartDateTime = allStartTimes.get(index);
-                LocalDateTime localEndDateTime = allEndTimes.get(index);
-
-                ZonedDateTime zonedDateTimeStart = localStartDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                ZonedDateTime zonedDateTimeEnd = localEndDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                LocalDateTime startTime = zonedDateTimeStart.toLocalDateTime();
-                LocalDateTime endTime = zonedDateTimeEnd.toLocalDateTime();
-
-                if(((appStart.isAfter(startTime) || appStart.isEqual(startTime))) && appEnd.isBefore(endTime)){
-                    return false;
+        int allTakenStartTimesCount = allTakenStartTimes.size() - 1;
+        int x = 0;
+        while (x <= allTakenStartTimesCount){
+            int y = validStartTimes.size() - 1;
+            LocalTime takenStartTime = allTakenStartTimes.get(x);
+            LocalTime takenEndTime = allTakenEndTimes.get(x);
+            while (y  >= 0){
+                LocalDateTime ldt = validStartTimes.get(y);
+                LocalTime possibleStartTime = possibleApptTimes.get(y).toLocalTime();
+                LocalTime possibleEndTime = possibleStartTime.plusMinutes(30);
+                if (possibleStartTime.isBefore(takenEndTime) || possibleStartTime.equals(takenEndTime)){
+                    if ((possibleStartTime.isBefore(takenStartTime) || possibleStartTime.equals(takenStartTime)) && possibleEndTime.isAfter(takenStartTime)) {
+                        validStartTimes.remove(y);
+                    }
+                    ldt = validStartTimes.get(y);
+                    if ((possibleStartTime.isAfter(takenStartTime) || possibleStartTime.equals(takenStartTime)) && possibleStartTime.isBefore(takenEndTime)) {
+                        validStartTimes.remove(y);
+                    }
+                    --y;
                 }
-                if(appEnd.isAfter(startTime)&& ((appEnd.isBefore(endTime) || appEnd.isEqual(endTime)))){
-                    return false;
-                }
-                if(((appStart.isBefore(startTime)) || appStart.isEqual(startTime)) && ((appEnd.isAfter(endTime) || appEnd.isEqual(endTime)))){
-                    return false;
-                }else{
-                    index++;
+                else {
+                    --y;
                 }
             }
-                return true;
+            ++x;
         }
-        return false;
+        return validStartTimes;
+    }
+    public static ObservableList<LocalDateTime> getAllValidEndTimes(LocalDate userPickedDate, LocalTime userPickedStartTime) {
+        validEndTimes.clear();
+        LocalTime possibleEndTime = userPickedStartTime.plusMinutes(30);
+        ObservableList<LocalDateTime> possibleApptTimes = TimeHelper.getAvailableTimes(userPickedDate, possibleEndTime);
+        validEndTimes = possibleApptTimes;
+        ObservableList<LocalTime> allTakenStartTimes = getAllTakenStartTimesByDate(userPickedDate);
+        ObservableList<LocalTime> allTakenEndTimes = getAllTakenEndTimesByDate(userPickedDate);
+        if(allTakenEndTimes.isEmpty() || allTakenEndTimes.isEmpty()){
+            return validEndTimes;
+        }
+        int allTakenEndTimesCount = allTakenEndTimes.size() - 1;
+        int x = 0;
+        while (x <= allTakenEndTimesCount){
+            int y = 0;
+            int z = validEndTimes.size() - 1;
+            while (z  >= y){
+                LocalDateTime ldt = validEndTimes.get(z);
+                if (userPickedStartTime.isBefore(allTakenEndTimes.get(x)) || userPickedStartTime.equals(allTakenEndTimes.get(x))){
+                    if (validEndTimes.get(z).equals(allTakenEndTimes.get(x)) || validEndTimes.get(z).toLocalTime().isAfter(allTakenEndTimes.get(x))
+                      || validEndTimes.get(z).toLocalTime().isAfter(allTakenStartTimes.get(x))){
+                        validEndTimes.remove(z);
+                    }
+                    --z;
+                    possibleEndTime = possibleEndTime.plusMinutes(30);
+                }
+                else {
+                    --z;
+                    possibleEndTime = possibleEndTime.plusMinutes(30);
+                }
+            }
+            ++x;
+        }
+        return validEndTimes;
     }
 
-}
+
+    }

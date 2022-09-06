@@ -62,36 +62,32 @@ public class ModifyAppointmentController implements Initializable {
      */
     @FXML
     void onDate(ActionEvent event) throws IOException{
-
+        startTime.setItems(null);
+        endTime.setItems(null);
+        startTime.setValue(null);
+        endTime.setValue(null);
+        startTimes.clear();
+        endTimes.clear();
         if(date.getValue() == null){
-
         }
         else{
-
-            int index = 0;
-            startTimes.clear();
-            while (index < Appointments.getAllStartTimesByDate(date.getValue()).size() && index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
-                LocalDateTime localStartDateTime = Appointments.getAllStartTimesByDate(date.getValue()).get(index);
-                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
-
-                if(Appointments.validTimes(localStartDateTime, localEndDateTime)){
-                    LocalTime localStartTime = localStartDateTime.toLocalTime();
-                    startTimes.add(localStartTime);
-                }
-                index++;
+            ObservableList<LocalDateTime> startDateTimes = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue()));
+            int i = 0;
+            while (i < startDateTimes.size()){
+                startTimes.add(startDateTimes.get(i).toLocalTime());
+                ++i;
             }
             if(startTimes.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Error");
-                alert.setContentText("There are no appointments on the date selected");
+                alert.setContentText("There are no other appointments available on the date selected");
                 alert.showAndWait();
-                return;
             }
-
+            if(startTime.getValue() != null){
+                startTimes.add(LocalTime.parse(startTime.getValue().toString()));
+            }
             startTime.setItems(startTimes);
-
-
         }
     }
     /**
@@ -103,6 +99,8 @@ public class ModifyAppointmentController implements Initializable {
      */
     @FXML
     void onMouseClickEnd(InputEvent event) throws IOException{
+        endTimes.clear();
+        endTime.setItems(null);
         if(date.getValue() == null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -120,27 +118,16 @@ public class ModifyAppointmentController implements Initializable {
             return;
         }
         else{
-
-            int index = 0;
-            endTimes.clear();
-            while (index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
-                LocalDateTime localStartDateTime = LocalDateTime.of(date.getValue(),(LocalTime) startTime.getValue());
-                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
-
-                if(!Appointments.validTimes(localStartDateTime, localEndDateTime)){
-
-                }
-                else if ((localStartDateTime.isAfter(Appointments.getAllEndTimesByDate(date.getValue()).get(index))
-                        ||localStartDateTime.isEqual(Appointments.getAllEndTimesByDate(date.getValue()).get(index)))
-                        && Appointments.validTimes(localStartDateTime, localEndDateTime)){
-
-                }
-                else {
-                    LocalTime localEndTime = localEndDateTime.toLocalTime();
-                    endTimes.add(localEndTime);
-                }
-                index++;
+            ObservableList<LocalDateTime> endDateTimes = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()), LocalTime.parse(startTime.getValue().toString()));
+            int i = 0;
+            while (i < endDateTimes.size()){
+                endTimes.add(endDateTimes.get(i).toLocalTime());
+                ++i;
             }
+            if(endTime.getValue() != null){
+                endTimes.add(LocalTime.parse(endTime.getValue().toString()));
+            }
+            endTime.setItems(endTimes);
         }
     }
     /**
@@ -150,6 +137,7 @@ public class ModifyAppointmentController implements Initializable {
      */
     @FXML
     void onMouseClickStart(InputEvent event) throws IOException{
+        endTime.setValue(null);
         if(date.getValue() == null){
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -161,30 +149,6 @@ public class ModifyAppointmentController implements Initializable {
 
         }
         else{
-
-
-            int index = 0;
-            startTimes.clear();
-            while (index < Appointments.getAllStartTimesByDate(date.getValue()).size() && index < Appointments.getAllEndTimesByDate(date.getValue()).size()){
-                LocalDateTime localStartDateTime = Appointments.getAllStartTimesByDate(date.getValue()).get(index);
-                LocalDateTime localEndDateTime = Appointments.getAllEndTimesByDate(date.getValue()).get(index);
-
-                if(Appointments.validTimes(localStartDateTime, localEndDateTime)){
-                    LocalTime localStartTime = localStartDateTime.toLocalTime();
-                    startTimes.add(localStartTime);
-                }
-                index++;
-            }
-            if(startTimes.isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Error");
-                alert.setContentText("There are no appointments on the date selected");
-                alert.showAndWait();
-                return;
-            }
-
-            startTime.setItems(startTimes);
 
         }
     }
@@ -213,29 +177,34 @@ public class ModifyAppointmentController implements Initializable {
         date.setValue(selectedAppointment.getStartDate());
         location.setText(selectedAppointment.getLocation());
         appointmentId = selectedAppointment.getAppointmentID();
-
+        customer.setItems(customerNames);
+        contact.setItems(Contacts.getAllContacts());
         //checks to see if the selected date is before current date
-        startTimes.clear();
+
         int index = 0;
-        while (index < TimeHelper.getAvailableTimes().size()){
-            LocalDateTime localDateTime = TimeHelper.getAvailableTimes().get(index);
-            LocalTime localTime = localDateTime.toLocalTime();
-            startTimes.add(localTime);
+        int validStartTimeCount = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue())).size();
+        startTimes.clear();
+        while (index < validStartTimeCount){
+            LocalDateTime localDateTime = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue())).get(index);
+            startTimes.add(localDateTime.toLocalTime());
             index++;
         }
         int index2 = 0;
+        int validEndTimeCount = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()),LocalTime.parse(startTime.getValue().toString())).size();
         endTimes.clear();
-        while (index2 < TimeHelper.getEndAvailableTimes().size()){
-            LocalDateTime localDateTime = TimeHelper.getEndAvailableTimes().get(index2);
-            LocalTime localTime = localDateTime.toLocalTime();
-            endTimes.add(localTime);
+        while (index2 < validEndTimeCount){
+            LocalDateTime localDateTime = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()),LocalTime.parse(startTime.getValue().toString())).get(index);
+            endTimes.add(localDateTime.toLocalTime());
             index2++;
         }
-        customer.setItems(customerNames);
-        contact.setItems(Contacts.getAllContacts());
+        if(startTime.getValue() != null){
+            startTimes.add(LocalTime.parse(startTime.getValue().toString()));
+        }
+        if(endTime.getValue() != null){
+            endTimes.add(LocalTime.parse(endTime.getValue().toString()));
+        }
         startTime.setItems(startTimes);
         endTime.setItems(endTimes);
-
 
         //Lambda function - ensures the dates available do not conflict with local business days based on the user's region
         date.setDayCellFactory(datePicker -> new DateCell(){
@@ -362,8 +331,22 @@ public class ModifyAppointmentController implements Initializable {
             Timestamp start = Timestamp.valueOf(localDateTime);
             Timestamp end = Timestamp.valueOf(localDateTime1);
 
-            Appointment appointment = new Appointment(appointmentId,title.getText(),description.getText(),location.getText(),type.getText(),start,end,Customers.getCustomerId(customer.getValue().toString()),userId,
-                    Contacts.getContactID(contact.getValue().toString()),date.getValue(),localDateTime.toLocalTime(),localDateTime1.toLocalTime(), "", contact.getValue().toString());
+            Appointment appointment = new Appointment(
+                                                        appointmentId,
+                                                        title.getText(),
+                                                        description.getText(),
+                                                        location.getText(),
+                                                        type.getText(),
+                                                        start,
+                                                        end,
+                                                        Customers.getCustomerId(customer.getValue().toString()),
+                                                        userId,
+                                                        Contacts.getContactID(contact.getValue().toString()),
+                                                        date.getValue(),
+                                                        localDateTime.toLocalTime(),
+                                                        localDateTime1.toLocalTime(),
+                                                        "",
+                                                        contact.getValue().toString());
             if (Appointments.modifyAppointment(appointment)){
                 errorText.setText("Successfully updated appointment :)");
             }

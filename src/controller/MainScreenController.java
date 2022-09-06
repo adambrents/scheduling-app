@@ -103,7 +103,6 @@ public class MainScreenController implements Initializable {
     private Customer selectedCustomer = null;
     public int userId;
 
-
     /**
      * When the add customer button is clicked, load corresponding screen
      * @param actionEvent
@@ -118,7 +117,6 @@ public class MainScreenController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
     /**
      * When the modify customer button is clicked, load corresponding screen
      * @param actionEvent
@@ -177,7 +175,6 @@ public class MainScreenController implements Initializable {
             }
         }
     }
-
     /**
      * init method, sets values for customer and appointment ui tables from db
      * @param url
@@ -222,13 +219,9 @@ public class MainScreenController implements Initializable {
         startDate1.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         customerMonth.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         userMonth.setCellValueFactory(new PropertyValueFactory<>("userID"));
-
         //sets table with monthly appt data
         monthTable.setItems(Appointments.getMonthlyAppointments());
-
-
     }
-
     /**
      * When the exit button is clicked, exit application
      * @param actionEvent
@@ -237,7 +230,6 @@ public class MainScreenController implements Initializable {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
     }
-
     /**
      * When the add appointment button is clicked, load corresponding screen
      * @param actionEvent
@@ -252,7 +244,6 @@ public class MainScreenController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
     /**
      * When the modify appointment button is clicked, load corresponding screen
      *
@@ -286,7 +277,6 @@ public class MainScreenController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
     /**
      * when clicked, user is warned of deleting appointment, then appointment is deleted
      *
@@ -327,8 +317,6 @@ public class MainScreenController implements Initializable {
             }
         }
     }
-
-
     /**
      * sets userId
      * @param user
@@ -336,7 +324,6 @@ public class MainScreenController implements Initializable {
     public void setUser(int user) {
         userId = user;
     }
-
     /**
      * Loads reports screen
      * @param actionEvent
@@ -351,7 +338,6 @@ public class MainScreenController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
     /**
      * loads allappointments screen
      *
