@@ -306,6 +306,7 @@ public class AddAppointmentController implements Initializable {
                 endTime.valueProperty().set(null);
                 customer.valueProperty().set(null);
                 contact.valueProperty().set(null);
+                date.setValue(null);
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
