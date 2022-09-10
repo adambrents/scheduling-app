@@ -2,6 +2,7 @@ package database;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Contact;
 import utilities.JDBCConnectionHelper;
 
 import java.sql.ResultSet;
@@ -9,22 +10,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Contacts {
-    private static ObservableList<String> allContacts = FXCollections.observableArrayList();
+    private static ObservableList<Contact> allContacts = FXCollections.observableArrayList();
     private static Statement statement;
 
     /**
      * gets a list of all contact names
      * @return
      */
-    public static ObservableList<String> getAllContacts(){
+    public static ObservableList<Contact> getAllContacts(){
         allContacts.clear();
         try{
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT * FROM client_schedule.contacts;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                String contactName = resultSet.getString(2);
-                allContacts.add(contactName);
+                Contact contact = new Contact(
+                        resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3)
+                );
+                allContacts.add(contact);
             }
             statement.close();
             return allContacts;
@@ -45,7 +50,8 @@ public class Contacts {
             String query = "SELECT Contact_ID FROM client_schedule.contacts WHERE Contact_Name = '" + contactName + "';";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                return resultSet.getInt(1);
+                int contactId = resultSet.getInt(1);
+                return contactId;
             }
         }catch (SQLException e){
             e.printStackTrace();

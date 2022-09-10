@@ -127,7 +127,7 @@ public class AllAppointmentsController implements Initializable {
         type.setCellValueFactory(new PropertyValueFactory<>("type"));
         start.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         end.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        startDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         customer.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         user.setCellValueFactory(new PropertyValueFactory<>("userID"));
 

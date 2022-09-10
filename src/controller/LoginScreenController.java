@@ -85,7 +85,7 @@ public class LoginScreenController implements Initializable {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     if(appt15Min != null){
                         alert.setContentText("You have the following appointment witin the next 15 minutes: \n\nAppointment ID: " + appt15Min.getAppointmentID()
-                                + "\nDate: " + appt15Min.getStartDate() + "\nTime: " + appt15Min.getStartTime());
+                                + "\nDate: " + appt15Min.getStart().toLocalDate() + "\nTime: " + appt15Min.getStart().toLocalTime());
                     }
                     else {
                         alert.setContentText("You have no Appointments within 15 minutes");

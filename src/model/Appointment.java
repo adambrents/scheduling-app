@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
@@ -11,14 +12,11 @@ public class Appointment {
     private String description;
     private String location;
     private String type;
-    private Timestamp start;
-    private Timestamp end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private int customerID;
     private int userID;
     private int contactID;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalTime endTime;
     private String division;
     private String contactName;
 
@@ -35,12 +33,9 @@ public class Appointment {
      * @param customerID
      * @param userID
      * @param contactID
-     * @param startDate
-     * @param startTime
-     * @param endTime
      * @param division
      */
-    public Appointment(int appointmentID, String title, String description, String location, String type, Timestamp start, Timestamp end, int customerID, int userID, int contactID, LocalDate startDate, LocalTime startTime, LocalTime endTime, String division, String contactName) {
+    public Appointment(int appointmentID, String title, String description, String location, String type, LocalDateTime start, LocalDateTime end, int customerID, int userID, int contactID, String division, String contactName) {
         this.appointmentID = appointmentID;
         this.title = title;
         this.description = description;
@@ -51,9 +46,6 @@ public class Appointment {
         this.customerID = customerID;
         this.userID = userID;
         this.contactID = contactID;
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
         this.division = division;
         this.contactName = contactName;
     }
@@ -144,7 +136,7 @@ public class Appointment {
      * gets start
      * @return
      */
-    public Timestamp getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
@@ -152,7 +144,7 @@ public class Appointment {
      * sets start
      * @param start
      */
-    public void setStart(Timestamp start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
@@ -160,15 +152,18 @@ public class Appointment {
      * gets end
      * @return
      */
-    public Timestamp getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
+    public LocalTime getEndTime() {return end.toLocalTime();}
+    public LocalTime getStartTime() {return start.toLocalTime();}
+    public LocalDate getDate() {return start.toLocalDate();}
     /**
      * sets end
      * @param end
      */
-    public void setEnd(Timestamp end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
@@ -218,55 +213,6 @@ public class Appointment {
      */
     public void setContactID(int contactID) {
         this.contactID = contactID;
-    }
-
-    /**
-     * gets StartDate
-     *
-     * @return
-     */
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    /**
-     * sets startDate
-     * @param startDate
-     */
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    /**
-     * gets Start Time
-     * @return
-     */
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    /**
-     * sets Start Time
-     * @param startTime
-     */
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    /**
-     * gets end Time
-     * @return
-     */
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    /**
-     * sets end time
-     * @param endTime
-     */
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
     }
 
     /**

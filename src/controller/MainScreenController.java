@@ -17,7 +17,9 @@ import model.Customer;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -200,7 +202,7 @@ public class MainScreenController implements Initializable {
         typeWeek.setCellValueFactory(new PropertyValueFactory<>("type"));
         startWeek.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endWeek.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        startDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         customerWeek.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         userWeek.setCellValueFactory(new PropertyValueFactory<>("userID"));
 
@@ -216,7 +218,7 @@ public class MainScreenController implements Initializable {
         typeMonth.setCellValueFactory(new PropertyValueFactory<>("type"));
         startMonth.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endMonth.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startDate1.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        startDate1.setCellValueFactory(new PropertyValueFactory<>("date"));
         customerMonth.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         userMonth.setCellValueFactory(new PropertyValueFactory<>("userID"));
         //sets table with monthly appt data
@@ -260,7 +262,7 @@ public class MainScreenController implements Initializable {
         if (selectedAppointment == null) {
             return;
         }
-        if (selectedAppointment.getStart().before(Timestamp.valueOf(LocalDateTime.now()))){
+        if (selectedAppointment.getStart().isBefore(LocalDateTime.now())){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Error");

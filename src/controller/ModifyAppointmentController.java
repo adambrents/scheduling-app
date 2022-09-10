@@ -15,12 +15,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import model.Appointment;
+import model.Contact;
 import model.Customer;
 import utilities.TimeHelper;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.time.*;
 import java.util.ResourceBundle;
 
@@ -48,6 +49,7 @@ public class ModifyAppointmentController implements Initializable {
     @FXML
     private Button update;
     private ObservableList<String> customerNames = FXCollections.observableArrayList();
+    private ObservableList<String> contactNames = FXCollections.observableArrayList();
     private Parent scene;
     private Appointment selectedAppointment;
     private int userId;
@@ -55,6 +57,7 @@ public class ModifyAppointmentController implements Initializable {
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
     private int appointmentId;
+    private boolean error;
     /**
      * when a date is selected, start and end times are populated
      * @param event
@@ -167,14 +170,26 @@ public class ModifyAppointmentController implements Initializable {
             i++;
         }
         customer.setValue(Customers.getCustomerName(selectedAppointment.getCustomerID()));
-        contact.setValue(Contacts.getContactName(selectedAppointment.getContactID()));
+        i = 0;
+        while(i < Customers.getAllCustomers().size()){
+            ObservableList<Contact> contacts = Contacts.getAllContacts();
+            String contactName = contacts.get(i).getContactName();
+            contactNames.add(i,contactName);
+            i++;
+        }
+        contact.setItems(contactNames);
         this.selectedAppointment = selectedAppointment;
+//        LocalDateTime startTimeConverted = TimeHelper.UTCtoLocalDate(Date.from(selectedAppointment.getStart().atZone(ZoneId.systemDefault()).toInstant())).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+//        LocalDateTime endTimeConverted = TimeHelper.UTCtoLocalDate(Date.from(selectedAppointment.getEnd().atZone(ZoneId.systemDefault()).toInstant())).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         title.setText(selectedAppointment.getTitle());
         description.setText(selectedAppointment.getDescription());
         type.setText(selectedAppointment.getType());
-        startTime.setValue(TimeHelper.UTCtoLocalDate(selectedAppointment.getStart()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
-        endTime.setValue(TimeHelper.UTCtoLocalDate(selectedAppointment.getEnd()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
-        date.setValue(selectedAppointment.getStartDate());
+//        startTime.setValue(startTimeConverted);
+//        endTime.setValue(endTimeConverted);
+        startTime.setValue(selectedAppointment.getStartTime());
+        endTime.setValue(selectedAppointment.getEndTime());
+        date.setValue(selectedAppointment.getStart().toLocalDate());
         location.setText(selectedAppointment.getLocation());
         appointmentId = selectedAppointment.getAppointmentID();
         customer.setItems(customerNames);
@@ -182,26 +197,26 @@ public class ModifyAppointmentController implements Initializable {
         //checks to see if the selected date is before current date
 
         int index = 0;
-        int validStartTimeCount = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue())).size();
+        int validStartTimeCount = Appointments.getAllValidStartTimes(date.getValue()).size();
         startTimes.clear();
+        if(startTime.getValue() != null){
+            startTimes.add(LocalTime.from(LocalTime.parse(startTime.getValue().toString())));
+        }
         while (index < validStartTimeCount){
             LocalDateTime localDateTime = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue())).get(index);
             startTimes.add(localDateTime.toLocalTime());
             index++;
         }
-        int index2 = 0;
+        index = 0;
         int validEndTimeCount = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()),LocalTime.parse(startTime.getValue().toString())).size();
         endTimes.clear();
-        while (index2 < validEndTimeCount){
+        if(endTime.getValue() != null){
+            endTimes.add(LocalTime.from(LocalTime.parse(endTime.getValue().toString())));
+        }
+        while (index < validEndTimeCount){
             LocalDateTime localDateTime = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()),LocalTime.parse(startTime.getValue().toString())).get(index);
             endTimes.add(localDateTime.toLocalTime());
-            index2++;
-        }
-        if(startTime.getValue() != null){
-            startTimes.add(LocalTime.parse(startTime.getValue().toString()));
-        }
-        if(endTime.getValue() != null){
-            endTimes.add(LocalTime.parse(endTime.getValue().toString()));
+            index++;
         }
         startTime.setItems(startTimes);
         endTime.setItems(endTimes);
@@ -243,52 +258,15 @@ public class ModifyAppointmentController implements Initializable {
      * @param actionEvent
      */
     public void onUpdate(ActionEvent actionEvent) {
-        boolean validAppointment = true;
-        errorText.setText("");
-        LocalDate dateSelected = date.getValue();
-        LocalTime startTimeSelected = (LocalTime) startTime.getValue();
-        LocalTime endTimeSelected = (LocalTime) endTime.getValue();
-
-        LocalDateTime startDateTime = LocalDateTime.of(dateSelected,startTimeSelected);
-        LocalDateTime endDateTime = LocalDateTime.of(dateSelected,endTimeSelected);
-
-        ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedStartDateTimeEST = zonedStartDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedEndDateTimeEST = zonedEndDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime ZonedESTNOW = ZonedDateTime.now(ZoneId.of("America/New_York"));
-
-        while (validAppointment){
-            if(zonedStartDateTimeEST.isBefore(ZonedESTNOW)){
-                errorText.setText("The start date/time is set before the current time");
-                validAppointment = false;
-            }
-            if(zonedEndDateTimeEST.toLocalTime().isAfter(LocalTime.of(22, 0))){
-                errorText.setText("The end time is set after the closing time");
-                validAppointment = false;
-            }
-            if(zonedStartDateTimeEST.toLocalTime().isBefore(LocalTime.of(8,0))){
-                errorText.setText("The selected start time is before business hours");
-                validAppointment = false;
-            }
-            if(zonedStartDateTimeEST.isAfter(zonedEndDateTimeEST)){
-                errorText.setText("The start time is set after the end Time");
-                validAppointment = false;
-            }
-            if(zonedStartDateTimeEST.isEqual(zonedEndDateTimeEST)){
-                errorText.setText("You cannot have an equal start and end time");
-                validAppointment = false;
-            }
-            break;
-        }
-        boolean error = false;
-        if (customer.getValue() == null || contact.getValue() == null || startTime.getValue() == null || endTime.getValue() == null) {
+        error = false;
+        label = "";
+        if((title.getText() == null) || (description.getText() == null) || (type.getText() == null) || (date.getValue() == null)
+                || (startTime.getValue() == null) ||  (endTime.getValue() == null) || (location.getText() == null) || (customer.getValue() == null)
+                ||(contact.getValue() == null)){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Combo Box Error");
-            alert.setContentText("All combo boxes MUST have something selected");
+            alert.setHeaderText("Error");
+            alert.setContentText("You must provide a value for every field");
             alert.showAndWait();
             return;
         }
@@ -304,7 +282,7 @@ public class ModifyAppointmentController implements Initializable {
             error = true;
             label = "Title";
         }
-        if(description.getText().length() <1){
+        if(description.getText().length() < 1){
             error = true;
             label = "Description";
         }
@@ -312,7 +290,7 @@ public class ModifyAppointmentController implements Initializable {
             error = true;
             label = "Type";
         }
-        if(location.getText().length() <1){
+        if(location.getText().length() < 1){
             error = true;
             label = "Location";
         }
@@ -324,42 +302,26 @@ public class ModifyAppointmentController implements Initializable {
             alert.showAndWait();
             return;
         }
-        if (validAppointment){
-            LocalDateTime localDateTime = zonedStartDateTimeEST.toLocalDateTime();
-            LocalDateTime localDateTime1 = zonedEndDateTimeEST.toLocalDateTime();
 
-            Timestamp start = Timestamp.valueOf(localDateTime);
-            Timestamp end = Timestamp.valueOf(localDateTime1);
-
-            Appointment appointment = new Appointment(
-                                                        appointmentId,
-                                                        title.getText(),
-                                                        description.getText(),
-                                                        location.getText(),
-                                                        type.getText(),
-                                                        start,
-                                                        end,
-                                                        Customers.getCustomerId(customer.getValue().toString()),
-                                                        userId,
-                                                        Contacts.getContactID(contact.getValue().toString()),
-                                                        date.getValue(),
-                                                        localDateTime.toLocalTime(),
-                                                        localDateTime1.toLocalTime(),
-                                                        "",
-                                                        contact.getValue().toString());
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(startTime.getValue().toString()));
+        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(endTime.getValue().toString()));
+        Appointment appointment = new Appointment(
+                appointmentId,
+                title.getText(),
+                description.getText(),
+                location.getText(),
+                type.getText(),
+                startDateTime,
+                endDateTime,
+                Customers.getCustomerId(customer.getValue().toString()),
+                userId,
+                Contacts.getContactID(contact.getValue().toString()),
+                Appointments.getDivisionsAppointments(Appointments.getId()),
+                contact.getValue().toString());
             if (Appointments.modifyAppointment(appointment)){
-                errorText.setText("Successfully updated appointment :)");
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Invalid Appointment");
-                alert.setContentText("Please check the appointment table to make sure appointments do not collide");
-                alert.showAndWait();
-            }
+            errorText.setText("Successfully updated appointment :)");
         }
     }
-
     /**
      * method loads preset values into all applicable fields
      *

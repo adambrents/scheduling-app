@@ -16,14 +16,15 @@ import javafx.scene.control.*;
 import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import model.Appointment;
+import model.Contact;
 import model.Customer;
 import utilities.TimeHelper;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
-import java.time.temporal.TemporalAccessor;
 import java.util.ResourceBundle;
 
 public class AddAppointmentController implements Initializable {
@@ -53,8 +54,8 @@ public class AddAppointmentController implements Initializable {
     private static int userId;
     boolean error;
     String label;
-    private int apptSaveIssue;
     private ObservableList<String> customerNames = FXCollections.observableArrayList();
+    private ObservableList<String> contactNames = FXCollections.observableArrayList();
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
 
@@ -232,89 +233,34 @@ public class AddAppointmentController implements Initializable {
             alert.showAndWait();
             return;
         }
-        error = false;
-        isApptValid = true;
-        errorText.setText("");
 
-        LocalDateTime startDateTime = LocalDateTime.of(date.getValue(),(LocalTime) startTime.getValue());
-        LocalDateTime endDateTime = LocalDateTime.of(date.getValue(),(LocalTime) endTime.getValue());
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(startTime.getValue().toString()));
+        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(endTime.getValue().toString()));
 
-        ZonedDateTime zonedStartDateTime = startDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedStartDateTimeEST = zonedStartDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime zonedEndDateTime = endDateTime.atZone(ZoneId.systemDefault());
-        ZonedDateTime zonedEndDateTimeEST = zonedEndDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-
-        ZonedDateTime ZonedESTNOW = ZonedDateTime.now(ZoneId.of("America/New_York"));
-
-        while (isApptValid){
-            if(zonedEndDateTimeEST.toLocalTime().isAfter(LocalTime.of(22, 0))){
-                apptSaveIssue = 1;
-                errorText.setText(Times.errorText(apptSaveIssue));
-                isApptValid = false;
-            }
-            if(zonedStartDateTime.toLocalTime().isBefore(LocalTime.of(8,0))){
-                apptSaveIssue = 2;
-                errorText.setText(Times.errorText(apptSaveIssue));
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.isBefore(ZonedESTNOW)){
-                apptSaveIssue = 5;
-                errorText.setText(Times.errorText(apptSaveIssue));
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.isAfter(zonedEndDateTimeEST)){
-                apptSaveIssue = 3;
-                errorText.setText(Times.errorText(apptSaveIssue));
-                isApptValid = false;
-            }
-            if(zonedStartDateTimeEST.isEqual(zonedEndDateTimeEST)){
-                apptSaveIssue = 4;
-                errorText.setText(Times.errorText(apptSaveIssue));
-                isApptValid = false;
-            }
-            break;
-        }
-        if (isApptValid){
-
-            Timestamp start = Timestamp.valueOf(zonedStartDateTime.toLocalDateTime());
-            Timestamp end = Timestamp.valueOf(zonedEndDateTime.toLocalDateTime());
-
-            Appointment appointment = new Appointment(
-                    Appointments.getId(),
-                    title.getText(),
-                    description.getText(),
-                    location.getText(),
-                    type.getText(),
-                    start,
-                    end,
-                    Customers.getCustomerId(customer.getValue().toString()),
-                    userId,
-                    Contacts.getContactID(contact.getValue().toString()),
-                    date.getValue(),
-                    zonedStartDateTime.toLocalTime(),
-                    zonedEndDateTime.toLocalTime(),
-                    Appointments.getDivisionsAppointments(Appointments.getId()),
-                    contact.getValue().toString());
-            if (Appointments.addAppointment(appointment)){
-                errorText.setText("Successfully added appointment :)");
-                title.clear();
-                description.clear();
-                location.clear();
-                type.clear();
-                startTime.valueProperty().set(null);
-                endTime.valueProperty().set(null);
-                customer.valueProperty().set(null);
-                contact.valueProperty().set(null);
-                date.setValue(null);
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Invalid Appointment");
-                alert.setContentText("Please check the appointment table to make sure appointments do not collide");
-                alert.showAndWait();
-            }
+        Appointment appointment = new Appointment(
+                Appointments.getId(),
+                title.getText(),
+                description.getText(),
+                location.getText(),
+                type.getText(),
+                startDateTime,
+                endDateTime,
+                Customers.getCustomerId(customer.getValue().toString()),
+                userId,
+                Contacts.getContactID(contact.getValue().toString()),
+                Appointments.getDivisionsAppointments(Appointments.getId()),
+                contact.getValue().toString());
+        if (Appointments.addAppointment(appointment)){
+            errorText.setText("Successfully added appointment :)");
+            title.clear();
+            description.clear();
+            location.clear();
+            type.clear();
+            startTime.valueProperty().set(null);
+            endTime.valueProperty().set(null);
+            customer.valueProperty().set(null);
+            contact.valueProperty().set(null);
+            date.setValue(null);
         }
     }
 
@@ -334,9 +280,17 @@ public class AddAppointmentController implements Initializable {
             customerNames.add(i,customerName);
             i++;
         }
-
         customer.setItems(customerNames);
-        contact.setItems(Contacts.getAllContacts());
+
+        i = 0;
+        while(i < Customers.getAllCustomers().size()){
+            ObservableList<Contact> contacts = Contacts.getAllContacts();
+            String contactName = contacts.get(i).getContactName();
+            contactNames.add(i,contactName);
+            i++;
+        }
+        contact.setItems(contactNames);
+
         startTime.setItems(startTimes);
         endTime.setItems(endTimes);
 
