@@ -75,18 +75,13 @@ public class TimeHelper {
             }
         });
     }
+
     /**
-     * converts UTC to the user's system time
-     * @param date
+     * accepts a start and end time and returns a bool on whether or not the end time is within business hours
+     * @param startDateTime
+     * @param endDateTime
      * @return
      */
-    public static Date UTCtoLocalDate(Date date) {
-
-        String timeZone = Calendar.getInstance().getTimeZone().getID();
-        Date local = new  Date(date.getTime() + TimeZone.getTimeZone(timeZone).getOffset(date.getTime()));
-        return local;
-    }
-
     public static boolean validEndBusinessHours(ZonedDateTime startDateTime, ZonedDateTime endDateTime){
 
         boolean isApptValid = true;
@@ -110,6 +105,13 @@ public class TimeHelper {
         }
         return isApptValid;
     }
+
+    /**
+     * accepts a start and end time and returns a bool on whether or not the start time is within business hours
+     *
+     * @param startDateTime
+     * @return
+     */
     public static boolean validStartBusinessHours(LocalDateTime startDateTime){
 
         boolean isApptValid = true;

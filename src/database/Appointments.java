@@ -605,6 +605,11 @@ public class Appointments {
 
     }
 
+    /**
+     * accepts dates and returns a list of valid start times
+     * @param userPickedDate
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAllValidStartTimes(LocalDate userPickedDate) {
         validStartTimes.clear();
         ObservableList<LocalDateTime> possibleApptTimes = TimeHelper.getAvailableStartTimes(userPickedDate);
@@ -638,6 +643,13 @@ public class Appointments {
         }
         return validStartTimes;
     }
+
+    /**
+     * accepts dates and times and returns a list of valid end times
+     * @param userPickedDate
+     * @param userPickedStartTime
+     * @return
+     */
     public static ObservableList<LocalDateTime> getAllValidEndTimes(LocalDate userPickedDate, LocalTime userPickedStartTime) {
         validEndTimes.clear();
         LocalDateTime userPickedDateTime = LocalDateTime.of(userPickedDate, userPickedStartTime);
