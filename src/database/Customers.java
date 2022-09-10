@@ -216,16 +216,7 @@ public class Customers {
      */
     public static void deleteCustomer(Customer selectedCustomer){
         try{PreparedStatement statement = JDBC.getConnection().prepareStatement(
-                "UPDATE client_schedule.customers "
-                  + "SET "
-                  + "Customer_Name=NULL, "
-                  + "Address=NULL, "
-                  + "Postal_Code=NULL, "
-                  + "Phone=NULL, "
-                  + "Create_Date=NULL, "
-                  + "Created_By=NULL,"
-                  + "Last_Update=NULL, "
-                  + "Last_Updated_By=NULL "
+                "DELETE FROM client_schedule.customers "
                   + "WHERE Customer_ID = " + selectedCustomer.getId() + ";");
             statement.executeUpdate();
             statement.close();
