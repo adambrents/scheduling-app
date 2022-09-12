@@ -115,10 +115,8 @@ public class Customers {
     public static int getId() {
         try {
             Statement statement = JDBC.getConnection().createStatement();
-            String query = "SELECT Customer_ID "
-                         + "FROM client_schedule.customers "
-                         + "AND Customer_Name IS NOT NULL "
-                         + "ORDER BY Customer_ID;";
+            String query = "SELECT MAX(Customer_ID) "
+                         + "FROM client_schedule.customers;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 if (resultSet.getInt(1) > lastID) {

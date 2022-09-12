@@ -114,10 +114,11 @@
                     <children>
                         <TableView fx:id="customersTable" prefHeight="360.0" prefWidth="382.0">
                             <columns>
-                                <TableColumn fx:id="customerNameColumn" prefWidth="93.20000612735748" text="Name" />
-                                <TableColumn fx:id="customerAddressColumn" prefWidth="95.60002899169922" text="Address" />
-                                <TableColumn fx:id="customerDivisionColumn" prefWidth="101.60003662109375" text="Division" />
-                                <TableColumn fx:id="customerCountryColumn" prefWidth="90.39996337890625" text="Country" />
+                        <TableColumn fx:id="customerIdColumn" prefWidth="27.0" text="ID" />
+                                <TableColumn fx:id="customerNameColumn" prefWidth="85.0" text="Name" />
+                                <TableColumn fx:id="customerAddressColumn" prefWidth="111.0" text="Address" />
+                                <TableColumn fx:id="customerDivisionColumn" minWidth="3.0" prefWidth="66.0" text="Division" />
+                                <TableColumn fx:id="customerCountryColumn" prefWidth="89.0" text="Country" />
                             </columns>
                         </TableView>
                     </children>

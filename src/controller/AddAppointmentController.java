@@ -38,13 +38,13 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private TextArea description;
     @FXML
-    private ComboBox endTime;
+    private ComboBox<LocalTime> endTime;
     @FXML
     private Label errorText;
     @FXML
     private TextField location;
     @FXML
-    private ComboBox startTime;
+    private ComboBox<LocalTime> startTime;
     @FXML
     private TextField title;
     @FXML
@@ -234,8 +234,8 @@ public class AddAppointmentController implements Initializable {
             return;
         }
 
-        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(startTime.getValue().toString()));
-        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(endTime.getValue().toString()));
+        LocalDateTime startDateTime = LocalDateTime.of(date.getValue(), startTime.getValue());
+        LocalDateTime endDateTime = LocalDateTime.of(date.getValue(), endTime.getValue());
 
         Appointment appointment = new Appointment(
                 Appointments.getId(),
@@ -283,7 +283,7 @@ public class AddAppointmentController implements Initializable {
         customer.setItems(customerNames);
 
         i = 0;
-        while(i < Customers.getAllCustomers().size()){
+        while(i < Contacts.getAllContacts().size()){
             ObservableList<Contact> contacts = Contacts.getAllContacts();
             String contactName = contacts.get(i).getContactName();
             contactNames.add(i,contactName);

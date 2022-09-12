@@ -99,6 +99,8 @@ public class MainScreenController implements Initializable {
     @FXML
     private TableColumn userWeek;
     @FXML
+    private TableColumn customerIdColumn;
+    @FXML
     private TableView weekTable;
     private Parent scene;
     private Appointment selectedAppointment = null;
@@ -148,7 +150,7 @@ public class MainScreenController implements Initializable {
         if(selectedCustomer != null) {
             Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
             alert1.setHeaderText("Delete");
-            alert1.setContentText("Do you want to delete this customer?");
+            alert1.setContentText("Do you want to delete this customer and all associated appointments?");
             Optional<ButtonType> result = alert1.showAndWait();
             if (result.get() == ButtonType.OK) {
                 try {
@@ -189,6 +191,7 @@ public class MainScreenController implements Initializable {
         customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         customerCountryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 
         //sets table with customer data
         customersTable.setItems(Customers.getAllCustomers());

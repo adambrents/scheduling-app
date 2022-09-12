@@ -171,7 +171,7 @@ public class ModifyAppointmentController implements Initializable {
         }
         customer.setValue(Customers.getCustomerName(selectedAppointment.getCustomerID()));
         i = 0;
-        while(i < Customers.getAllCustomers().size()){
+        while(i < Contacts.getAllContacts().size()){
             ObservableList<Contact> contacts = Contacts.getAllContacts();
             String contactName = contacts.get(i).getContactName();
             contactNames.add(i,contactName);

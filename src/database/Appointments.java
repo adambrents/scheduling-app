@@ -88,31 +88,7 @@ public class Appointments {
      */
     public static boolean addAppointment(Appointment appointment) {
 
-        LocalDateTime appStart = appointment.getStart();
-        LocalDateTime appEnd = appointment.getEnd();
         valid = true;
-        while (valid) {
-            int index = 0;
-            while (index < customerAppointments.size()) {
-                Appointment aptmt = customerAppointments.get(index);
-
-                ZonedDateTime zonedDateTimeStart = aptmt.getStart().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                ZonedDateTime zonedDateTimeEnd = aptmt.getEnd().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                LocalDateTime startTime = zonedDateTimeStart.toLocalDateTime();
-                LocalDateTime endTime = zonedDateTimeEnd.toLocalDateTime();
-
-                if (((appStart.isAfter(startTime) || appStart.isEqual(startTime))) && appEnd.isBefore(endTime)) {
-                    return false;
-                }
-                if (appEnd.isAfter(startTime) && ((appEnd.isBefore(endTime) || appEnd.isEqual(endTime)))) {
-                    return false;
-                }
-                if (((appStart.isBefore(startTime)) || appStart.isEqual(startTime)) && ((appEnd.isAfter(endTime) || appEnd.isEqual(endTime)))) {
-                    return false;
-                } else {
-                    index++;
-                }
-            }
             try {
                 PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(
                         "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID)" +
@@ -121,8 +97,8 @@ public class Appointments {
                                 appointment.getDescription() + "', '" +
                                 appointment.getLocation() + "', '" +
                                 appointment.getType() + "', '" +
-                                Timestamp.valueOf(appStart) + "', '" +
-                                Timestamp.valueOf(appEnd) + "', " +
+                                Timestamp.valueOf(appointment.getStart()) + "', '" +
+                                Timestamp.valueOf(appointment.getEnd()) + "', " +
                                 "NOW(), " +
                                 "'User', " +
                                 "NOW(), " +
@@ -135,10 +111,8 @@ public class Appointments {
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
-            break;
-        }
-        return false;
     }
 
     /**
@@ -630,7 +604,7 @@ public class Appointments {
                     if ((possibleStartTime.isBefore(takenStartTime) || possibleStartTime.equals(takenStartTime)) && possibleEndTime.isAfter(takenStartTime)) {
                         validStartTimes.remove(y);
                     }
-                    if ((possibleStartTime.isAfter(takenStartTime) || possibleStartTime.equals(takenStartTime)) && possibleStartTime.isBefore(takenEndTime)) {
+                    else if ((possibleStartTime.isAfter(takenStartTime) || possibleStartTime.equals(takenStartTime)) && possibleStartTime.isBefore(takenEndTime)) {
                         validStartTimes.remove(y);
                     }
                     --y;

@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Appointment;
+import model.Contact;
 import model.Report;
 
 import java.io.IOException;
@@ -178,7 +179,7 @@ public class ReportsController implements Initializable {
             id.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
             title.setCellValueFactory(new PropertyValueFactory<>("title"));
             description.setCellValueFactory(new PropertyValueFactory<>("description"));
-            startDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+            startDate.setCellValueFactory(new PropertyValueFactory<>("date"));
             startTime.setCellValueFactory(new PropertyValueFactory<>("startTime"));
             endTime.setCellValueFactory(new PropertyValueFactory<>("endTime"));
             customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
@@ -260,7 +261,6 @@ public class ReportsController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         monthsList.clear();
         yearsList.clear();
-
         try {//TODO Add reports to db and make this a getter call for all reports available
             addReport = new Report("Appointment Schedule", 1);
             reports.add(addReport);
@@ -287,7 +287,15 @@ public class ReportsController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        contactBox.setItems(Contacts.getAllContacts());
+        int index = 0;
+        ObservableList<Contact> contacts = Contacts.getAllContacts();
+        ObservableList<String> contactNames = FXCollections.observableArrayList();
+        while (index < contacts.size()){
+            String contactName = contacts.get(index).getContactName();
+            contactNames.add(contactName);
+            ++index;
+        }
+        contactBox.setItems(contactNames);
         divisions.setItems(Divisions.getAllDivisionNames());
     }
 

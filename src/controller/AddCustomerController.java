@@ -104,7 +104,15 @@ public class AddCustomerController implements Initializable {
             }
             else{
                 try {
-                    Customer customer = new Customer(Customers.getId(),nameTxt.getText(),addressTxt.getText(),postalTxt.getText(),phoneTxt.getText(),countryBox.getValue().toString(),divisionBox.getValue().toString(),Divisions.getDivisionId((String) divisionBox.getValue()));
+                    Customer customer = new Customer(
+                            Customers.getId(),
+                            nameTxt.getText(),
+                            addressTxt.getText(),
+                            postalTxt.getText(),
+                            phoneTxt.getText(),
+                            countryBox.getValue().toString(),
+                            divisionBox.getValue().toString(),
+                            Divisions.getDivisionId((String) divisionBox.getValue()));
                     Customers.addCustomer(customer);
                     errorText.setText("Successfully added Customer");
                     customersTable.setItems(Customers.getAllCustomers());
