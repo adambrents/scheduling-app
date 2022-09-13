@@ -4,16 +4,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Appointment;
 import model.Customer;
-import model.Division;
 import utilities.JDBCConnectionHelper;
 import utilities.TimeHelper;
 
 import java.sql.*;
 import java.time.*;
-
-import static java.time.Instant.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.ZoneOffset.UTC;
 
 public class Appointments {
 
@@ -97,7 +92,7 @@ public class Appointments {
                                 appointment.getDescription() + "', '" +
                                 appointment.getLocation() + "', '" +
                                 appointment.getType() + "', '" +
-                                Timestamp.valueOf(appointment.getStart()) + "', '" +
+                                Timestamp.valueOf(LocalDateTime.now()) + "', '" +
                                 Timestamp.valueOf(appointment.getEnd()) + "', " +
                                 "NOW(), " +
                                 "'User', " +

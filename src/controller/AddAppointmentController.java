@@ -3,7 +3,6 @@ package controller;
 import database.Appointments;
 import database.Contacts;
 import database.Customers;
-import database.Times;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,12 +17,9 @@ import javafx.stage.Stage;
 import model.Appointment;
 import model.Contact;
 import model.Customer;
-import utilities.TimeHelper;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.*;
 import java.util.ResourceBundle;
 
@@ -50,7 +46,6 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private TextField type;
     private static Parent scene;
-    private static boolean isApptValid;
     private static int userId;
     boolean error;
     String label;
@@ -76,7 +71,7 @@ public class AddAppointmentController implements Initializable {
 
         }
         else{
-            ObservableList<LocalDateTime> startDateTimes = Appointments.getAllValidStartTimes(LocalDate.from(date.getValue()));
+            ObservableList<LocalDateTime> startDateTimes = Appointments.getAllValidStartTimes(date.getValue());
 
             int i = 0;
             while (i < startDateTimes.size()){
@@ -126,7 +121,7 @@ public class AddAppointmentController implements Initializable {
         }
         else{
 
-            ObservableList<LocalDateTime> endDateTimes = Appointments.getAllValidEndTimes(LocalDate.from(date.getValue()), LocalTime.parse(startTime.getValue().toString()));
+            ObservableList<LocalDateTime> endDateTimes = Appointments.getAllValidEndTimes(date.getValue(), startTime.getValue());
 
             int i = 0;
             while (i < endDateTimes.size()){
