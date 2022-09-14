@@ -85,22 +85,38 @@ public class Appointments {
 
         valid = true;
             try {
-                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(
-                        "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID)" +
-                                "VALUES('" +
-                                appointment.getTitle() + "', '" +
-                                appointment.getDescription() + "', '" +
-                                appointment.getLocation() + "', '" +
-                                appointment.getType() + "', '" +
-                                Timestamp.valueOf(LocalDateTime.now()) + "', '" +
-                                Timestamp.valueOf(appointment.getEnd()) + "', " +
-                                "NOW(), " +
-                                "'User', " +
-                                "NOW(), " +
-                                "'User', " +
-                                appointment.getCustomerID() + ", " +
-                                appointment.getUserID() + ", " +
-                                appointment.getContactID() + ");");
+                String sql = "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
+                        "VALUES(?,?,?,?,?,?,NOW(),'User',NOW(),'User',?,?,?)";
+                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement( sql
+//                        "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
+//                                "VALUES('" +
+//                                appointment.getTitle() + "', '" +
+//                                appointment.getDescription() + "', '" +
+//                                appointment.getLocation() + "', '" +
+//                                appointment.getType() + "', '" +
+//                                Timestamp.valueOf(LocalDateTime.now()) + "', '" +
+//                                Timestamp.valueOf(appointment.getEnd()) + "', " +
+//                                "NOW(), " +
+//                                "'User', " +
+//                                "NOW(), " +
+//                                "'User', " +
+//                                appointment.getCustomerID() + ", " +
+//                                appointment.getUserID() + ", " +
+//                                appointment.getContactID() + ");"
+            );
+                int x = 1;
+                preparedStatement.setString(x++,appointment.getTitle());
+                preparedStatement.setString(x++,appointment.getDescription());
+                preparedStatement.setString(x++,appointment.getLocation());
+                preparedStatement.setString(x++,appointment.getType());
+                preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getStart()));
+                preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getEnd()));
+                preparedStatement.setInt(x++, appointment.getCustomerID());
+                preparedStatement.setInt(x++, appointment.getContactID());
+                preparedStatement.setInt(x++, appointment.getUserID());
+
+                System.out.println("Start = " + appointment.getStart());
+                System.out.println(preparedStatement.toString());
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
                 return true;
