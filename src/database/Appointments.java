@@ -13,27 +13,17 @@ import java.time.*;
 public class Appointments {
 
     private static ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
-    private static ObservableList<Appointment> customerAppointments = FXCollections.observableArrayList();
     private static ObservableList<Appointment> weeklyAppointments = FXCollections.observableArrayList();
     private static ObservableList<Appointment> monthlyAppointments = FXCollections.observableArrayList();
     private static ObservableList<Appointment> contactAppointments = FXCollections.observableArrayList();
     private static ObservableList<String> allTypes = FXCollections.observableArrayList();
     private static ObservableList<String> customerAppointmentExists = FXCollections.observableArrayList();
-    private static ObservableList<Appointment> divisionAppointments = FXCollections.observableArrayList();
     private static ObservableList<Appointment> appointmentsInDivision = FXCollections.observableArrayList();
     private static ObservableList<LocalDateTime> allStartTimes = FXCollections.observableArrayList();
-    private static ObservableList<LocalDateTime> allEndTimes = FXCollections.observableArrayList();
-    private static boolean valid = true;
-    public static boolean conflict = false;
     private static Statement statement;
     private static PreparedStatement preparedStatement;
-    private static int divisionCount;
     private static String divisionAppointment;
     private static int contactID;
-    private static String division = null;
-
-    private static ObservableList<LocalDateTime> startAvailableTimes = FXCollections.observableArrayList();
-    private static ObservableList<LocalDateTime> endAvailableTimes = FXCollections.observableArrayList();
     private static ObservableList<LocalDateTime> validStartTimes = FXCollections.observableArrayList();
     private static ObservableList<LocalDateTime> validEndTimes = FXCollections.observableArrayList();
 
@@ -83,27 +73,12 @@ public class Appointments {
      */
     public static boolean addAppointment(Appointment appointment) {
 
-        valid = true;
             try {
-                String sql = "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
+                String sql =
+                        "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, " +
+                                                  "Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
                         "VALUES(?,?,?,?,?,?,NOW(),'User',NOW(),'User',?,?,?)";
-                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement( sql
-//                        "INSERT INTO appointments (Title, Description, Location, Type, Start, End , Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
-//                                "VALUES('" +
-//                                appointment.getTitle() + "', '" +
-//                                appointment.getDescription() + "', '" +
-//                                appointment.getLocation() + "', '" +
-//                                appointment.getType() + "', '" +
-//                                Timestamp.valueOf(LocalDateTime.now()) + "', '" +
-//                                Timestamp.valueOf(appointment.getEnd()) + "', " +
-//                                "NOW(), " +
-//                                "'User', " +
-//                                "NOW(), " +
-//                                "'User', " +
-//                                appointment.getCustomerID() + ", " +
-//                                appointment.getUserID() + ", " +
-//                                appointment.getContactID() + ");"
-            );
+                PreparedStatement preparedStatement = JDBC.getConnection().prepareStatement(sql);
                 int x = 1;
                 preparedStatement.setString(x++,appointment.getTitle());
                 preparedStatement.setString(x++,appointment.getDescription());
@@ -133,28 +108,24 @@ public class Appointments {
      * @return
      */
     public static boolean modifyAppointment(Appointment appointment) {
-
-    LocalDateTime testAppStart = appointment.getStart();
-    LocalDateTime testAppEnd = appointment.getEnd();
-
-    valid = true;
         try {
-            PreparedStatement statement = JDBC.getConnection().prepareStatement(
-                    "UPDATE client_schedule.appointments " +
-                        "SET Title= '" + appointment.getTitle() + "" +
-                        "', Description='" + appointment.getDescription() + "" +
-                        "', Location='" + appointment.getLocation() + "" +
-                        "', Type='" + appointment.getType() + "" +
-                        "', Start='" + testAppStart + "" +
-                        "', END='" + testAppEnd + "" +
-                        "', Create_Date=NOW()" +
-                        ", Created_By='User" +
-                        "', Last_Update=NOW()" +
-                        ", Last_Updated_By='USER'" +
-                        ", Customer_ID=" + appointment.getCustomerID() + "" +
-                        ", User_ID=" + appointment.getUserID() + "" +
-                        ", Contact_ID=" + appointment.getContactID() + " " +
-                        "WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
+            String sql = "UPDATE client_schedule.appointments " +
+                         "SET Title = ?, Description = ?, Location = ?, Type = ?, Start = ?, END = ?, Create_Date=NOW()," +
+                         "Created_By='User, Last_Update=NOW(), Last_Updated_By='USER', Customer_ID = ?, User_ID = ?, Contact_ID = ?" +
+                         "WHERE Appointment_ID = ?;";
+            PreparedStatement statement = JDBC.getConnection().prepareStatement(sql);
+            int x = 1;
+            preparedStatement.setString(x++,appointment.getTitle());
+            preparedStatement.setString(x++,appointment.getDescription());
+            preparedStatement.setString(x++,appointment.getLocation());
+            preparedStatement.setString(x++,appointment.getType());
+            preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getStart()));
+            preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getEnd()));
+            preparedStatement.setInt(x++, appointment.getCustomerID());
+            preparedStatement.setInt(x++, appointment.getUserID());
+            preparedStatement.setInt(x++, appointment.getContactID());
+            preparedStatement.setInt(x++, appointment.getAppointmentID());
+
             statement.executeUpdate();
             statement.close();
             return true;
@@ -198,7 +169,8 @@ public class Appointments {
      */
     public static boolean deleteAppointment(Appointment appointment) {
         try {
-            PreparedStatement statement = JDBC.getConnection().prepareStatement("DELETE FROM appointments WHERE Appointment_ID=" + appointment.getAppointmentID() + ";");
+            PreparedStatement statement = JDBC.getConnection().prepareStatement("DELETE FROM appointments WHERE Appointment_ID = ?;");
+            statement.setInt(1, appointment.getAppointmentID());
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -214,7 +186,8 @@ public class Appointments {
      */
     public static void deleteAppointment(int customerId) {
         try {
-            PreparedStatement statement = JDBC.getConnection().prepareStatement("DELETE FROM appointments WHERE Customer_ID=" + customerId + ";");
+            PreparedStatement statement = JDBC.getConnection().prepareStatement("DELETE FROM appointments WHERE Customer_ID = ?;");
+            statement.setInt(1, customerId);
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -232,10 +205,9 @@ public class Appointments {
             weeklyAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division "
-                    + "FROM client_schedule.appointments AS a "
-                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                    + "WHERE a.Title IS NOT NULL; ";
+                         + "FROM client_schedule.appointments AS a "
+                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 Appointment appointment = new Appointment(
@@ -284,8 +256,7 @@ public class Appointments {
             String query = "SELECT a.*, fld.Division "
                     + "FROM client_schedule.appointments AS a "
                     + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                    + "WHERE a.Title IS NOT NULL; ";
+                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 Appointment appointment = new Appointment(
@@ -330,7 +301,7 @@ public class Appointments {
         allTypes.clear();
         try {
             statement = JDBCConnectionHelper.getStatement();
-            String query = "SELECT DISTINCT Type FROM client_schedule.appointments WHERE Title IS NOT NULL;";
+            String query = "SELECT DISTINCT Type FROM client_schedule.appointments;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 allTypes.add(resultSet.getString(1));
@@ -353,7 +324,7 @@ public class Appointments {
         int returnNumber = 0;
         try {
             statement = JDBCConnectionHelper.getStatement();
-            String query = "SELECT * FROM client_schedule.appointments WHERE Title IS NOT NULL;";
+            String query = "SELECT * FROM client_schedule.appointments;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 LocalDateTime YearAndMonth = resultSet.getTimestamp("Start").toLocalDateTime();
@@ -383,11 +354,11 @@ public class Appointments {
             contactAppointments.clear();
             statement = JDBCConnectionHelper.getStatement();
             String query = "SELECT a.*, fld.Division AS Division "
-                    + "FROM client_schedule.appointments AS a "
-                    + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
-                    + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
-                    + "WHERE Contact_ID=" + contactID
-                    + " AND Title IS NOT NULL;";
+                         + "FROM client_schedule.appointments AS a "
+                         + "INNER JOIN client_schedule.customers AS cust ON cust.Customer_ID = a.Customer_ID "
+                         + "INNER JOIN client_schedule.first_level_divisions AS fld ON fld.Division_ID = cust.Division_ID "
+                         + "WHERE Contact_ID=" + contactID
+                         + " AND Title IS NOT NULL;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),

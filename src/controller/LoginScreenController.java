@@ -1,10 +1,8 @@
 package controller;
 
 import database.Appointments;
-import database.Logins;
+import database.Users;
 import database.Times;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,16 +12,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.Appointment;
-import utilities.TimeHelper;
+import model.User;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -57,27 +52,20 @@ public class LoginScreenController implements Initializable {
         FileWriter loginAttempts = new FileWriter("login_acitivity.txt", true);
         PrintWriter loginAttempt = new PrintWriter(loginAttempts);
 
-
         String usrnm = usernameField.getText();
-        boolean validUsername = Logins.submit(usrnm);
-        if (validUsername == true) {
-            String pssword = passwordField.getText();
-            boolean isUser = Logins.submit(usrnm, pssword);
+        String pssword = passwordField.getText();
+        User user = new User(usrnm, 0, pssword);
+
+        int valid = Users.submit(user);
+        if (valid == 0) {
             try{
-                if (isUser != true) {
-                    passwordError.setText(resourceBundle.getString("PasswordError"));
-                    usernameError.setText("");
-                    loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText() + " Invalid password");
-                    loginAttempt.close();
-                }
-                else {
                     loginAttempt.println(Times.getTimeStamp() + " Successful Login UserName: " + usernameField.getText());
                     loginAttempt.close();
                     Stage stage = (Stage)((Button)actionEvent.getSource()).getScene().getWindow();
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
                     scene = loader.load();
                     MainScreenController controller = loader.getController();
-                    controller.setUser(Logins.getUserId(usernameField.getText()));
+                    controller.setUser(user.getUserId());
                     stage.setScene(new Scene(scene));
                     stage.show();
 
@@ -91,7 +79,6 @@ public class LoginScreenController implements Initializable {
                         alert.setContentText("You have no Appointments within 15 minutes");
                     }
                     alert.show();
-                }
             } catch (Exception e){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -117,10 +104,23 @@ public class LoginScreenController implements Initializable {
                 return;
             }
 
-        } else {
+        }
+        else if (valid == 1) {
+            passwordError.setText(resourceBundle.getString("PasswordError"));
+            usernameError.setText("");
+            loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText() + " Invalid password");
+            loginAttempt.close();
+        }
+        else if (valid == 2){
             loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText());
             loginAttempt.close();
             usernameError.setText(resourceBundle.getString("UsernameError"));
+            passwordError.setText("");
+        }
+        else if (valid == 3){
+            loginAttempt.println(Times.getTimeStamp() + " Unsuccessful Login UserName: " + usernameField.getText() + " Invalid username and password");
+            loginAttempt.close();
+            usernameError.setText(resourceBundle.getString("UsernamePwError"));
             passwordError.setText("");
         }
     }

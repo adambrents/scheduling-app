@@ -14,6 +14,7 @@ import model.Appointment;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -67,7 +68,7 @@ public class AllAppointmentsController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddAppointmentsScreen.fxml"));
         scene = loader.load();
         AddAppointmentController controller = loader.getController();
-        controller.setUser(userId);
+        controller.setUserId(userId);
         stage.setScene(new Scene(scene));
         stage.show();
     }
@@ -107,6 +108,36 @@ public class AllAppointmentsController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainScreen.fxml"));
         scene = loader.load();
         MainScreenController controller = loader.getController();
+        controller.setUser(userId);
+        stage.setScene(new Scene(scene));
+        stage.show();
+    }
+
+    /**
+     * When user clicks the modify button, the modify appointment screen will load
+     * @param actionEvent
+     * @throws IOException
+     */
+    public void onModify(ActionEvent actionEvent) throws IOException {
+        if (Table.getSelectionModel() == null) {
+            return;
+        }
+        else {
+            selectedAppointment = ((Appointment) Table.getSelectionModel().getSelectedItem());
+        }
+        if (selectedAppointment.getStart().isBefore(LocalDateTime.now())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error");
+            alert.setContentText("You may not alter an appointment that has already occurred :(");
+            alert.showAndWait();
+            return;
+        }
+        Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ModifyAppointmentsScreen.fxml"));
+        scene = loader.load();
+        ModifyAppointmentController controller = loader.getController();
+        controller.setAppointment(selectedAppointment);
         controller.setUser(userId);
         stage.setScene(new Scene(scene));
         stage.show();

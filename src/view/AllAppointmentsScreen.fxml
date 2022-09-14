@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600" prefWidth="1200" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AllAppointmentsController">
+<AnchorPane prefHeight="600" prefWidth="1200" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AllAppointmentsController">
     <children>
         <StackPane layoutX="67.0" layoutY="67.0" prefHeight="513.0" prefWidth="1079.0">
             <children>
@@ -25,12 +29,13 @@
                 </TableView>
             </children></StackPane>
         <Button layoutX="1115.0" layoutY="26.0" mnemonicParsing="false" onAction="#onHome" text="Home" />
-        <Button layoutX="120.0" layoutY="26.0" mnemonicParsing="false" onAction="#onDelete" text="Delete" />
+        <Button layoutX="175.0" layoutY="26.0" mnemonicParsing="false" onAction="#onDelete" text="Delete" />
         <Button layoutX="67.0" layoutY="26.0" mnemonicParsing="false" onAction="#onAdd" text="Add" />
         <Label layoutX="471.0" layoutY="21.0" text="All Appointments">
             <font>
                 <Font name="System Bold" size="25.0" />
             </font>
         </Label>
+      <Button layoutX="115.0" layoutY="26.0" mnemonicParsing="false" onAction="#onModify" text="Modify" />
     </children>
 </AnchorPane>

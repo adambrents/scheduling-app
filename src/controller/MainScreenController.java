@@ -179,54 +179,7 @@ public class MainScreenController implements Initializable {
             }
         }
     }
-    /**
-     * init method, sets values for customer and appointment ui tables from db
-     * @param url
-     * @param resourceBundle
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        //Get data for Customer Table
-        customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
-        customerCountryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
-        customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
-        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        //sets table with customer data
-        customersTable.setItems(Customers.getAllCustomers());
-
-        //Get data for Weekly Appointments table
-        idWeek.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
-        titleWeek.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionWeek.setCellValueFactory(new PropertyValueFactory<>("description"));
-        locationWeek.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactWeek.setCellValueFactory(new PropertyValueFactory<>("contactName"));
-        typeWeek.setCellValueFactory(new PropertyValueFactory<>("type"));
-        startWeek.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        endWeek.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        customerWeek.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        userWeek.setCellValueFactory(new PropertyValueFactory<>("userID"));
-
-        //sets table with weekly appt data
-        weekTable.setItems(Appointments.getWeeklyAppointments());
-
-        //Get data for Monthly Appointments table
-        idMonth.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
-        titleMonth.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionMonth.setCellValueFactory(new PropertyValueFactory<>("description"));
-        locationMonth.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactMonth.setCellValueFactory(new PropertyValueFactory<>("contactName"));
-        typeMonth.setCellValueFactory(new PropertyValueFactory<>("type"));
-        startMonth.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        endMonth.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        startDate1.setCellValueFactory(new PropertyValueFactory<>("date"));
-        customerMonth.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        userMonth.setCellValueFactory(new PropertyValueFactory<>("userID"));
-        //sets table with monthly appt data
-        monthTable.setItems(Appointments.getMonthlyAppointments());
-    }
     /**
      * When the exit button is clicked, exit application
      * @param actionEvent
@@ -245,7 +198,7 @@ public class MainScreenController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddAppointmentsScreen.fxml"));
         scene = loader.load();
         AddAppointmentController controller = loader.getController();
-        controller.setUser(userId);
+        controller.setUserId(userId);
         stage.setScene(new Scene(scene));
         stage.show();
     }
@@ -357,5 +310,53 @@ public class MainScreenController implements Initializable {
         controller.setUserId(userId);
         stage.setScene(new Scene(scene));
         stage.show();
+    }
+    /**
+     * init method, sets values for customer and appointment ui tables from db
+     * @param url
+     * @param resourceBundle
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        //Get data for Customer Table
+        customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+        customerCountryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
+        customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        //sets table with customer data
+        customersTable.setItems(Customers.getAllCustomers());
+
+        //Get data for Weekly Appointments table
+        idWeek.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        titleWeek.setCellValueFactory(new PropertyValueFactory<>("title"));
+        descriptionWeek.setCellValueFactory(new PropertyValueFactory<>("description"));
+        locationWeek.setCellValueFactory(new PropertyValueFactory<>("location"));
+        contactWeek.setCellValueFactory(new PropertyValueFactory<>("contactName"));
+        typeWeek.setCellValueFactory(new PropertyValueFactory<>("type"));
+        startWeek.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        endWeek.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        startDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        customerWeek.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        userWeek.setCellValueFactory(new PropertyValueFactory<>("userID"));
+
+        //sets table with weekly appt data
+        weekTable.setItems(Appointments.getWeeklyAppointments());
+
+        //Get data for Monthly Appointments table
+        idMonth.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        titleMonth.setCellValueFactory(new PropertyValueFactory<>("title"));
+        descriptionMonth.setCellValueFactory(new PropertyValueFactory<>("description"));
+        locationMonth.setCellValueFactory(new PropertyValueFactory<>("location"));
+        contactMonth.setCellValueFactory(new PropertyValueFactory<>("contactName"));
+        typeMonth.setCellValueFactory(new PropertyValueFactory<>("type"));
+        startMonth.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        endMonth.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        startDate1.setCellValueFactory(new PropertyValueFactory<>("date"));
+        customerMonth.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        userMonth.setCellValueFactory(new PropertyValueFactory<>("userID"));
+        //sets table with monthly appt data
+        monthTable.setItems(Appointments.getMonthlyAppointments());
     }
 }

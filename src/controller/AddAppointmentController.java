@@ -3,6 +3,7 @@ package controller;
 import database.Appointments;
 import database.Contacts;
 import database.Customers;
+import database.Users;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import model.Appointment;
 import model.Contact;
 import model.Customer;
+import model.User;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,6 +31,8 @@ public class AddAppointmentController implements Initializable {
     private ComboBox contact;
     @FXML
     private ComboBox customer;
+    @FXML
+    private ComboBox employee;
     @FXML
     private DatePicker date;
     @FXML
@@ -53,6 +57,14 @@ public class AddAppointmentController implements Initializable {
     private ObservableList<String> contactNames = FXCollections.observableArrayList();
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
+
+    private  ObservableList<User> allUsers = FXCollections.observableArrayList();
+
+    private ObservableList<String> userNames = FXCollections.observableArrayList();
+
+    public static void setUserId(int userId) {
+        AddAppointmentController.userId = userId;
+    }
 
     /**
      * when a date is selected, start and end times are populated
@@ -131,7 +143,6 @@ public class AddAppointmentController implements Initializable {
             endTime.setItems(endTimes);
         }
     }
-
     /**
      * when start time is selected, date field is checked to ensure a value is present
      * @param event
@@ -148,19 +159,10 @@ public class AddAppointmentController implements Initializable {
             alert.setContentText("You must enter a date to see start times");
             alert.showAndWait();
             return;
-
         }
         else{
 
         }
-    }
-
-    /**
-     * sets userId
-     * @param userId
-     */
-    public void setUser(int userId) {
-        this.userId = userId;
     }
 
     /**
@@ -228,7 +230,9 @@ public class AddAppointmentController implements Initializable {
             alert.showAndWait();
             return;
         }
-
+        if(employee.getValue() != null){
+            AddAppointmentController.setUserId(Users.getUserByName(employee.getValue().toString()).getUserId());
+        }
         LocalDateTime startDateTime = LocalDateTime.of(date.getValue(), startTime.getValue());
         LocalDateTime endDateTime = LocalDateTime.of(date.getValue(), endTime.getValue());
 
@@ -255,6 +259,7 @@ public class AddAppointmentController implements Initializable {
             endTime.valueProperty().set(null);
             customer.valueProperty().set(null);
             contact.valueProperty().set(null);
+            employee.valueProperty().set(null);
             date.setValue(null);
         }
     }
@@ -269,8 +274,8 @@ public class AddAppointmentController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         int i = 0;
         customerNames.clear();
-        while(i < Customers.getAllCustomers().size()){
-            ObservableList<Customer> customers = Customers.getAllCustomers();
+        ObservableList<Customer> customers = Customers.getAllCustomers();
+        while(i < customers.size()){
             String customerName = customers.get(i).getName();
             customerNames.add(i,customerName);
             i++;
@@ -278,13 +283,24 @@ public class AddAppointmentController implements Initializable {
         customer.setItems(customerNames);
 
         i = 0;
-        while(i < Contacts.getAllContacts().size()){
-            ObservableList<Contact> contacts = Contacts.getAllContacts();
+        contactNames.clear();
+        ObservableList<Contact> contacts = Contacts.getAllContacts();
+        while(i < contacts.size()){
             String contactName = contacts.get(i).getContactName();
             contactNames.add(i,contactName);
             i++;
         }
         contact.setItems(contactNames);
+
+        i = 0;
+        userNames.clear();
+        allUsers = Users.getAllUsers();
+        while(i < allUsers.size()){
+            String userName = allUsers.get(i).getUsername();
+            userNames.add(i,userName);
+            i++;
+        }
+        employee.setItems(userNames);
 
         startTime.setItems(startTimes);
         endTime.setItems(endTimes);

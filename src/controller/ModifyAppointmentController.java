@@ -3,6 +3,7 @@ package controller;
 import database.Appointments;
 import database.Contacts;
 import database.Customers;
+import database.Users;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,12 +18,14 @@ import javafx.stage.Stage;
 import model.Appointment;
 import model.Contact;
 import model.Customer;
+import model.User;
 import utilities.TimeHelper;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.time.*;
+import java.util.EmptyStackException;
 import java.util.ResourceBundle;
 
 public class ModifyAppointmentController implements Initializable {
@@ -31,17 +34,19 @@ public class ModifyAppointmentController implements Initializable {
     @FXML
     private ComboBox customer;
     @FXML
+    private ComboBox employee;
+    @FXML
     private DatePicker date;
     @FXML
     private TextArea description;
     @FXML
-    private ComboBox endTime;
+    private ComboBox<LocalTime> endTime;
     @FXML
     private Label errorText;
     @FXML
     private TextField location;
     @FXML
-    private ComboBox startTime;
+    private ComboBox<LocalTime> startTime;
     @FXML
     private TextField title;
     @FXML
@@ -58,6 +63,9 @@ public class ModifyAppointmentController implements Initializable {
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
     private int appointmentId;
     private boolean error;
+    private  ObservableList<User> allUsers = FXCollections.observableArrayList();
+
+    private ObservableList<String> userNames = FXCollections.observableArrayList();
     /**
      * when a date is selected, start and end times are populated
      * @param event
@@ -169,6 +177,7 @@ public class ModifyAppointmentController implements Initializable {
             customerNames.add(i,customerName);
             i++;
         }
+        customer.setItems(customerNames);
         customer.setValue(Customers.getCustomerName(selectedAppointment.getCustomerID()));
         i = 0;
         while(i < Contacts.getAllContacts().size()){
@@ -178,24 +187,27 @@ public class ModifyAppointmentController implements Initializable {
             i++;
         }
         contact.setItems(contactNames);
+        contact.setValue(Contacts.getContactName(selectedAppointment.getContactID()));
+        i = 0;
+        userNames.clear();
+        allUsers = Users.getAllUsers();
+        while(i < allUsers.size()){
+            String userName = allUsers.get(i).getUsername();
+            userNames.add(i,userName);
+            i++;
+        }
+        employee.setItems(userNames);
+        employee.setValue(Users.getUserById(selectedAppointment.getUserID()).getUsername());
         this.selectedAppointment = selectedAppointment;
-//        LocalDateTime startTimeConverted = TimeHelper.UTCtoLocalDate(Date.from(selectedAppointment.getStart().atZone(ZoneId.systemDefault()).toInstant())).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        LocalDateTime endTimeConverted = TimeHelper.UTCtoLocalDate(Date.from(selectedAppointment.getEnd().atZone(ZoneId.systemDefault()).toInstant())).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
         title.setText(selectedAppointment.getTitle());
         description.setText(selectedAppointment.getDescription());
         type.setText(selectedAppointment.getType());
-//        startTime.setValue(startTimeConverted);
-//        endTime.setValue(endTimeConverted);
         startTime.setValue(selectedAppointment.getStartTime());
         endTime.setValue(selectedAppointment.getEndTime());
         date.setValue(selectedAppointment.getStart().toLocalDate());
         location.setText(selectedAppointment.getLocation());
         appointmentId = selectedAppointment.getAppointmentID();
-        customer.setItems(customerNames);
-        contact.setItems(Contacts.getAllContacts());
         //checks to see if the selected date is before current date
-
         int index = 0;
         int validStartTimeCount = Appointments.getAllValidStartTimes(date.getValue()).size();
         startTimes.clear();
@@ -302,9 +314,11 @@ public class ModifyAppointmentController implements Initializable {
             alert.showAndWait();
             return;
         }
-
-        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(startTime.getValue().toString()));
-        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.parse(date.getValue().toString()), LocalTime.parse(endTime.getValue().toString()));
+        if(employee.getValue() != null){
+            AddAppointmentController.setUserId(Users.getUserByName(employee.getValue().toString()).getUserId());
+        }
+        LocalDateTime startDateTime = LocalDateTime.of(date.getValue(), startTime.getValue());
+        LocalDateTime endDateTime = LocalDateTime.of(date.getValue(), endTime.getValue());
         Appointment appointment = new Appointment(
                 appointmentId,
                 title.getText(),
