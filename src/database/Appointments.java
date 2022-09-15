@@ -90,8 +90,6 @@ public class Appointments {
                 preparedStatement.setInt(x++, appointment.getContactID());
                 preparedStatement.setInt(x++, appointment.getUserID());
 
-                System.out.println("Start = " + appointment.getStart());
-                System.out.println(preparedStatement.toString());
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
                 return true;
@@ -219,7 +217,7 @@ public class Appointments {
                         resultSet.getInt("User_ID"),
                         resultSet.getInt("Contact_ID"),
                         resultSet.getString("Division"),
-                        Contacts.getContactName(resultSet.getInt("Customer_ID")));
+                        Contacts.getContactName(resultSet.getInt("Contact_ID")));
 
                 LocalDateTime localDateTime = appointment.getStart();
 
