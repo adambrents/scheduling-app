@@ -109,22 +109,19 @@ public class Appointments {
      */
     public static boolean modifyAppointment(Appointment appointment) {
         try {
-            String sql = "UPDATE client_schedule.appointments " +
-                         "SET Title = ?, Description = ?, Location = ?, Type = ?, Start = ?, END = ?, Create_Date=NOW()," +
-                         "Created_By='User, Last_Update=NOW(), Last_Updated_By='USER', Customer_ID = ?, User_ID = ?, Contact_ID = ?" +
-                         "WHERE Appointment_ID = ?;";
+            String sql = "UPDATE client_schedule.appointments SET Create_Date=NOW(),Created_By='User',Last_Update=NOW(),Last_Updated_By='User', Title = ?,Description = ?,Location = ?,Type = ?,Start = ?,END = ?,Customer_ID = ?,User_ID = ?,Contact_ID = ? WHERE Appointment_ID = ?;";
             PreparedStatement statement = JDBC.getConnection().prepareStatement(sql);
             int x = 1;
-            preparedStatement.setString(x++,appointment.getTitle());
-            preparedStatement.setString(x++,appointment.getDescription());
-            preparedStatement.setString(x++,appointment.getLocation());
-            preparedStatement.setString(x++,appointment.getType());
-            preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getStart()));
-            preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getEnd()));
-            preparedStatement.setInt(x++, appointment.getCustomerID());
-            preparedStatement.setInt(x++, appointment.getUserID());
-            preparedStatement.setInt(x++, appointment.getContactID());
-            preparedStatement.setInt(x++, appointment.getAppointmentID());
+            statement.setString(x++,appointment.getTitle());
+            statement.setString(x++,appointment.getDescription());
+            statement.setString(x++,appointment.getLocation());
+            statement.setString(x++,appointment.getType());
+            statement.setTimestamp(x++, Timestamp.valueOf(appointment.getStart()));
+            statement.setTimestamp(x++, Timestamp.valueOf(appointment.getEnd()));
+            statement.setInt(x++, appointment.getCustomerID());
+            statement.setInt(x++, appointment.getUserID());
+            statement.setInt(x++, appointment.getContactID());
+            statement.setInt(x++, appointment.getAppointmentID());
 
             statement.executeUpdate();
             statement.close();

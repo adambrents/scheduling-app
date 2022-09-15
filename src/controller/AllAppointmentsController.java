@@ -138,7 +138,7 @@ public class AllAppointmentsController implements Initializable {
         scene = loader.load();
         ModifyAppointmentController controller = loader.getController();
         controller.setAppointment(selectedAppointment);
-        controller.setUser(userId);
+        controller.setUserId(userId);
         stage.setScene(new Scene(scene));
         stage.show();
     }

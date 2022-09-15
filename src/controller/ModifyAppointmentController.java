@@ -57,7 +57,7 @@ public class ModifyAppointmentController implements Initializable {
     private ObservableList<String> contactNames = FXCollections.observableArrayList();
     private Parent scene;
     private Appointment selectedAppointment;
-    private int userId;
+    private static int userId;
     private String label;
     private ObservableList<LocalTime> startTimes = FXCollections.observableArrayList();
     private ObservableList<LocalTime> endTimes = FXCollections.observableArrayList();
@@ -261,8 +261,8 @@ public class ModifyAppointmentController implements Initializable {
      * sets userId
      * @param userId
      */
-    public void setUser(int userId) {
-        this.userId = userId;
+    public static void setUserId(int userId) {
+        ModifyAppointmentController.userId = userId;
     }
 
     /**
@@ -315,7 +315,7 @@ public class ModifyAppointmentController implements Initializable {
             return;
         }
         if(employee.getValue() != null){
-            AddAppointmentController.setUserId(Users.getUserByName(employee.getValue().toString()).getUserId());
+            ModifyAppointmentController.setUserId(Users.getUserByName(employee.getValue().toString()).getUserId());
         }
         LocalDateTime startDateTime = LocalDateTime.of(date.getValue(), startTime.getValue());
         LocalDateTime endDateTime = LocalDateTime.of(date.getValue(), endTime.getValue());
