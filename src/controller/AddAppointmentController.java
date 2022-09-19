@@ -265,7 +265,8 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
-     * method loads preset values into all applicable fields and uses a lambda function to ensure dates don't conflict with the local business days of
+     * method loads preset values into all applicable fields and uses a lambda function to ensure dates don't conflict with the local business days of.
+     * Justification: I need to ensure the available dates in the date picker are within the M-F business days of the business and user
      * the user's region
      * @param url
      * @param resourceBundle

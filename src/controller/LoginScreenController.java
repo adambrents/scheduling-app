@@ -44,6 +44,7 @@ public class LoginScreenController implements Initializable {
      * Displays a notification of any upcoming appointments within 15 minutes
      * writes a log to the login attempts log
      * Lambda expression to handle user response if error with login. Reloads login page on OK
+     * Justification: This is so that a user can retry their last action if it is an external exception
      * @param actionEvent
      * @throws IOException
      */

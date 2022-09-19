@@ -63,7 +63,9 @@ public class TimeHelper {
         return availableTimes;
     }
     /**
-     * method to contain datepicker lambda that disables any dates prior to today's date
+     * Lambda: method to contain datepicker lambda that disables any dates prior to today's date
+     * Justification: This ensures all dates prior to today's date are greyed out in the date picker across the whole application
+     * so that a user doesn't accidentally schedule an appointment prior to today's date
      */
     public static void datePickerDisablePastDays(){
         DatePicker dp = new DatePicker();
