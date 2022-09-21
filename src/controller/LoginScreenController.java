@@ -18,9 +18,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static java.time.LocalTime.now;
 
 public class LoginScreenController implements Initializable {
 
@@ -40,6 +43,7 @@ public class LoginScreenController implements Initializable {
      * Validates if user exists and if information was entered correctly. Loads main screen
      * Displays a notification of any upcoming appointments within 15 minutes
      * writes a log to the login attempts log
+     * Lambda expression to handle user response if error with login. Reloads login page on OK
      * @param actionEvent
      * @throws IOException
      */
@@ -69,10 +73,10 @@ public class LoginScreenController implements Initializable {
                     stage.setScene(new Scene(scene));
                     stage.show();
 
-                    Appointment appt15Min = Appointments.get15MinAppt();
+                    Appointment appt15Min = Appointments.get15MinAppt(LocalDateTime.now());
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     if(appt15Min != null){
-                        alert.setContentText("You have the following appointment witin the next 15 minutes: \n\nAppointment ID: " + appt15Min.getAppointmentID()
+                        alert.setContentText("You have the following appointment within the next 15 minutes: \n\nAppointment ID: " + appt15Min.getAppointmentID()
                                 + "\nDate: " + appt15Min.getStart().toLocalDate() + "\nTime: " + appt15Min.getStart().toLocalTime());
                     }
                     else {

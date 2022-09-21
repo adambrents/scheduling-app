@@ -167,6 +167,7 @@ public class ModifyAppointmentController implements Initializable {
     /**
      * loads all appointment information into the modify appointment screen to be changed and reviewed
      *
+     * Lambda function - ensures the dates available do not conflict with local business days based on the user's region
      * @param selectedAppointment
      */
     public void setAppointment(Appointment selectedAppointment) {

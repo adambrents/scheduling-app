@@ -265,8 +265,8 @@ public class AddAppointmentController implements Initializable {
     }
 
     /**
-     * method loads preset values into all applicable fields
-     *
+     * method loads preset values into all applicable fields and uses a lambda function to ensure dates don't conflict with the local business days of
+     * the user's region
      * @param url
      * @param resourceBundle
      */

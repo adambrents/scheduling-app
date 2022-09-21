@@ -87,8 +87,8 @@ public class Appointments {
                 preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getStart()));
                 preparedStatement.setTimestamp(x++, Timestamp.valueOf(appointment.getEnd()));
                 preparedStatement.setInt(x++, appointment.getCustomerID());
-                preparedStatement.setInt(x++, appointment.getContactID());
                 preparedStatement.setInt(x++, appointment.getUserID());
+                preparedStatement.setInt(x++, appointment.getContactID());
 
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
@@ -484,15 +484,21 @@ public class Appointments {
      *
      * @return
      */
-    public static Appointment get15MinAppt() {
+    public static Appointment get15MinAppt(LocalDateTime now) {
 
         try {
-            String sql = "SELECT * FROM client_schedule.appointments AS a WHERE Start>UTC_TIMESTAMP AND minute(Start)<minute(Start)+minute(15) ORDER BY Start ASC LIMIT 1; ";
+            String sql = "SELECT * FROM client_schedule.appointments AS a WHERE Start>=? AND Start<=? ORDER BY Start ASC LIMIT 1; ";
             preparedStatement = JDBC.getConnection().prepareStatement(sql);
+
+            int x = 1;
+            preparedStatement.setTimestamp(x++,Timestamp.valueOf(now));
+            preparedStatement.setTimestamp(x++,Timestamp.valueOf(now.plusMinutes(15)));
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (preparedStatement.getResultSet() == null) {
                 return null;
             }
+
             if (resultSet.next()) {
                 Appointment appointment = new Appointment(resultSet.getInt(1),
                         resultSet.getString(2),
