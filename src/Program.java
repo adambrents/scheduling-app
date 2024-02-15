@@ -1,6 +1,3 @@
-package main;
-
-import database.JDBC;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,7 +6,7 @@ import javafx.stage.Stage;
 
 import static java.lang.Integer.parseInt;
 
-public class Main extends Application{
+public class Program extends Application{
     /**
      * Loads login screen on app startup
      * @param primaryStage
@@ -28,8 +25,6 @@ public class Main extends Application{
      * @param args
      */
     public static void main(String[] args) {
-        JDBC.openConnection();
         launch(args);
-        JDBC.closeConnection();
     }
 }

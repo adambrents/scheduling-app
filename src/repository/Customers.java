@@ -1,8 +1,9 @@
-package database;
+package repository;
 
+import repository.configuration.JDBC;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Customer;
+import viewmodels.Customer;
 import utilities.JDBCConnectionHelper;
 
 import java.sql.PreparedStatement;

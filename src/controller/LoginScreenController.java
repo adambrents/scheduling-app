@@ -1,8 +1,8 @@
 package controller;
 
-import database.Appointments;
-import database.Users;
-import database.Times;
+import repository.Appointments;
+import repository.Users;
+import repository.Times;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,8 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import model.Appointment;
-import model.User;
+import viewmodels.Appointment;
+import viewmodels.User;
 
 import java.io.FileWriter;
 import java.io.IOException;

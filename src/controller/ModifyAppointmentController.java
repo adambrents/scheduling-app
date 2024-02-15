@@ -1,9 +1,9 @@
 package controller;
 
-import database.Appointments;
-import database.Contacts;
-import database.Customers;
-import database.Users;
+import repository.Appointments;
+import repository.Contacts;
+import repository.Customers;
+import repository.Users;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,17 +15,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
-import model.Appointment;
-import model.Contact;
-import model.Customer;
-import model.User;
-import utilities.TimeHelper;
+import viewmodels.Appointment;
+import viewmodels.Contact;
+import viewmodels.Customer;
+import viewmodels.User;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
 import java.time.*;
-import java.util.EmptyStackException;
 import java.util.ResourceBundle;
 
 public class ModifyAppointmentController implements Initializable {

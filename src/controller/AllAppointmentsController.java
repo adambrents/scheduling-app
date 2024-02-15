@@ -1,6 +1,6 @@
 package controller;
 
-import database.Appointments;
+import repository.Appointments;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.Appointment;
+import viewmodels.Appointment;
 
 import java.io.IOException;
 import java.net.URL;

@@ -1,0 +1,7 @@
+{
+  "connectionStrings": {
+      "db": "client_schedule",
+      "userName": "sqlUser",
+      "password": "Passw0rd!"
+    }
+}

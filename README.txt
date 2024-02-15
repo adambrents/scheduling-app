@@ -23,7 +23,7 @@ JavaFX 18.0.2
 mysql-connector-java-8.0.25
 ## IDE Run Instructions
 1. Check to ensure JDK, JFX, and JDBC driver are up-to-date
-2. Ensure main.Main is set as the startup project
+2. Ensure Program is set as the startup project
 3. Ensure you have a path variable for JFX listed in the IDE settings. I am using this name for it:
    1. PATH_TO_FX
 4. Use the following VM options in the run configurations:

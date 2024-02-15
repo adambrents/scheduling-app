@@ -1,8 +1,8 @@
-package database;
+package repository;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Contact;
+import viewmodels.Contact;
 import utilities.JDBCConnectionHelper;
 
 import java.sql.ResultSet;

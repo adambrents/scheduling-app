@@ -1,6 +1,4 @@
-package model;
-
-import javafx.collections.ObservableList;
+package viewmodels;
 
 public class Report {
 

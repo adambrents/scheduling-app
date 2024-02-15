@@ -1,16 +1,11 @@
 package utilities;
 
-import database.Times;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 
 import java.time.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class TimeHelper {
     private static ObservableList<LocalDateTime> availableTimes = FXCollections.observableArrayList();

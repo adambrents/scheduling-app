@@ -1,6 +1,6 @@
 controller
-database
+repository
 main
-model
+viewmodels
 utilities
 view

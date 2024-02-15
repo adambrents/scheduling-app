@@ -1,4 +1,4 @@
-package model;
+package viewmodels;
 
 public class Customer {
     private int Id;

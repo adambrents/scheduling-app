@@ -1,7 +1,7 @@
 package controller;
 
-import database.Customers;
-import database.Divisions;
+import repository.Customers;
+import repository.Divisions;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,8 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.Customer;
-import model.Division;
+import viewmodels.Customer;
+import viewmodels.Division;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;

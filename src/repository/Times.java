@@ -1,10 +1,8 @@
-package database;
+package repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 public class Times {
     public static int officeClosureReason = 0;

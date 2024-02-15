@@ -1,9 +1,10 @@
-package database;
+package repository;
 
+import repository.configuration.JDBC;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Appointment;
-import model.Customer;
+import viewmodels.Appointment;
+import viewmodels.Customer;
 import utilities.JDBCConnectionHelper;
 import utilities.TimeHelper;
 

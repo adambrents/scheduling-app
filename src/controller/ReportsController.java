@@ -1,9 +1,8 @@
 package controller;
 
-import database.Appointments;
-import database.Contacts;
-import database.Customers;
-import database.Divisions;
+import repository.Appointments;
+import repository.Contacts;
+import repository.Divisions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,18 +14,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.Appointment;
-import model.Contact;
-import model.Report;
+import viewmodels.Appointment;
+import viewmodels.Contact;
+import viewmodels.Report;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 import static java.lang.Integer.parseInt;
 import static java.time.Month.*;

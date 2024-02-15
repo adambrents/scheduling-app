@@ -1,10 +1,7 @@
 package utilities;
 
-import database.Customers;
-import database.JDBC;
-import model.Customer;
+import repository.configuration.JDBC;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 

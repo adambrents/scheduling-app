@@ -1,4 +1,4 @@
-package database;
+package repository;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
